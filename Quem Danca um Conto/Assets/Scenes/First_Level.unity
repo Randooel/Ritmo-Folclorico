@@ -1291,6 +1291,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1035329772}
+  - component: {fileID: 1035329774}
   - component: {fileID: 1035329773}
   m_Layer: 0
   m_Name: Song Source
@@ -1410,6 +1411,23 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &1035329774
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1035329771}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b9f840afb037e94d9060877a33d8f05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentSongIndex: 0
+  music:
+  - {fileID: 8300000, guid: 4699ea893f9850640a95c9e1b9db499d, type: 3}
+  - {fileID: 8300000, guid: 410dc9e768ffe0f43ae419ccf448f00f, type: 3}
+  audioSource: {fileID: 0}
 --- !u!1 &1084296111
 GameObject:
   m_ObjectHideFlags: 0

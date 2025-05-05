@@ -25,8 +25,12 @@ public class Conductor : MonoBehaviour
 
     void Start()
     {
-        // Gets the AudioSource component
-        musicSource = GetComponent<AudioSource>();
+        // If musicSource wasn't serialized
+        if(musicSource == null)
+        {
+            // Finds the game object "Song Source" that have it
+            musicSource = GameObject.Find("Song Source").GetComponent<AudioSource>();
+        }
 
         // Calculate the number of seconds in each beat
         secPerBeat = 60f / songBpm;
