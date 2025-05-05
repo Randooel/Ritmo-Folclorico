@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class PlayerRythm : MonoBehaviour
+public class PlayerRhythm : MonoBehaviour
 {
     // READ ME: THIS SCRIPT CHECKS HOW WELL PLAYER'S INPUT MATCH THE SONG'S BEAT
     private Conductor conductor;
@@ -14,11 +14,17 @@ public class PlayerRythm : MonoBehaviour
     [Header("Ex: Defines as *0*.7 / *1*.3")]
     [Range(0,2)] public float minCorrectTime = 0.7f;
     [Range(0,2)] public float maxCorrectTime = 1.3f;
+    
 
     [Header("Timing Interval for Perfect Input")]
     [Header("Ex: Define as *0*.9 / *1*.1")]
     [Range(0,2)] public float minPerfectTime = 0.9f;
     [Range(0,2)] public float maxPerfectTime = 1.1f;
+
+    [Header("Hit Booleans")]
+    public bool hitWrong;
+    public bool hitCorrect;
+    public bool hitPerfect;
 
     void Start()
     {
@@ -43,17 +49,34 @@ public class PlayerRythm : MonoBehaviour
             {
                 if (beatWhenButtonPressed >= beatTime + minPerfectTime && beatWhenButtonPressed < beatTime + maxPerfectTime)
                 {
-                    Debug.Log("PRESSED AT THE PERFECT TIME!!!!");
+                    hitPerfect = true;
                 }
                 else
                 {
-                    Debug.Log("Pressed at the CORRECT Time!");
+                    hitCorrect = true;
                 }
             }
             else
             {
-                Debug.Log("Missed!");
+                hitWrong = true;
             }
+        }
+        ResetBooleans();
+    }
+
+    void ResetBooleans()
+    {
+        if(hitWrong)
+        {
+            hitWrong = false;
+        }
+        if(hitCorrect)
+        {
+            hitCorrect = false;
+        }
+        if(hitPerfect)
+        {
+            hitPerfect = false;
         }
     }
 }
