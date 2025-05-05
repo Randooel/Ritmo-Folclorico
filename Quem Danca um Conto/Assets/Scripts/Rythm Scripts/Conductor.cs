@@ -29,7 +29,7 @@ public class Conductor : MonoBehaviour
         if(musicSource == null)
         {
             // Finds the game object "Song Source" that have it
-            musicSource = GameObject.Find("Song Source").GetComponent<AudioSource>();
+            musicSource = GameObject.Find("Song Manager").GetComponent<AudioSource>();
         }
 
         // Calculate the number of seconds in each beat
