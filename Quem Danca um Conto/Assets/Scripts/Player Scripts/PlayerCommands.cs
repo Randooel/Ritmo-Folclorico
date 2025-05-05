@@ -2,9 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerMovement : MonoBehaviour
+public class PlayerCommands : MonoBehaviour
 {
-    // Start is called before the first frame update
+    // READ ME: THIS SCRIPT CHECKS IF THE PLAYER'S INPUTS MATCH A VALID COMMAND IF SO, IT EXECUTES IT
+    
+
     void Start()
     {
         
