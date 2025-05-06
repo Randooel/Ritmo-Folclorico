@@ -1,30 +1,38 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.PackageManager.Requests;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class HudManager : MonoBehaviour
 {
-    private Conductor conductor;
-    private PlayerRhythm playerRhythm;
+    private Conductor _conductor;
+    private PlayerRhythm _playerRhythm;
 
-    [SerializeField] private Image rhythmRing;
+    private Coroutine _resetColorCoroutine;
+
+    [SerializeField] private Image _rhythmRing;
 
     [Header("Color Settings")]
     public Color defaultColor = Color.white;
     public Color correctColor = Color.green;
     public Color perfectColor = Color.yellow;
     public Color wrongColor = Color.red;
-    [SerializeField] private bool isHighlighting;
+    private Color _baseColor;
 
     [Header("Opacity Setting")]
-    [SerializeField][Range(0f, 1f)] private float defaultAlpha = 1f;
-    [SerializeField] [Range(0f, 1f)] private float targetAlpha = 0.5f;
-
+    [SerializeField][Range(0f, 1f)] private float _defaultAlpha = 0.25f;
+    [SerializeField][Range(0f, 1f)] private float _targetAlpha = 0.5f;
+    [SerializeField][Range(0f, 1f)] private float _highlightAlpha = 1f;
     void Start()
     {
-        conductor = FindObjectOfType<Conductor>();
-        playerRhythm = FindObjectOfType<PlayerRhythm>();
+        _conductor = FindObjectOfType<Conductor>();
+        _playerRhythm = FindObjectOfType<PlayerRhythm>();
+
+        _playerRhythm.OnHit += ChangeColorOnHit;
+
+        _baseColor = defaultColor;
+        _rhythmRing.color = _baseColor;
     }
 
     void Update()
@@ -34,37 +42,56 @@ public class HudManager : MonoBehaviour
 
     public void ChangeAlphaOnBeat()
     {
-        float songPosition = conductor.songPositionInBeats;
-        float firstDecimal = Mathf.Floor((songPosition % 1f) * 10);
+        float beatsPosition = _conductor.songPositionInBeats;
+        float firstDecimal = Mathf.Floor((beatsPosition % 1f) * 10);
 
-        if (firstDecimal >= 9 || firstDecimal < 1f)
+        if (firstDecimal >= 8 || firstDecimal <= 2)
         {
-            ChangeAlpha(targetAlpha);
+            ChangeAlpha(_targetAlpha);
         }
-        else if (firstDecimal < 0.9f || firstDecimal > 1.1f)
+        else 
         {
-            ChangeAlpha(defaultAlpha);
+            ChangeAlpha(_defaultAlpha);
         }
     }
 
     public void ChangeAlpha(float alpha)
     {
-        Color color = rhythmRing.color;
+        Color color = _rhythmRing.color;
         color.a = alpha;
-        rhythmRing.color = color;
+        _rhythmRing.color = color;
     }
 
-    public void ChangeColorOnHit()
+    public void ChangeColorOnHit(string HitType)
     {
-        if(playerRhythm.hitCorrect)
+        switch(HitType)
         {
-            rhythmRing.color = wrongColor;
+            case "Wrong":
+                _baseColor = wrongColor;
+                break;
+            case "Correct":
+                _baseColor = correctColor;
+                break;
+            case "Perfect":
+                _baseColor = perfectColor;
+                break;
         }
 
-        if (playerRhythm.hitPerfect)
+        Color newColor = _baseColor;
+        newColor.a = _rhythmRing.color.a;
+        _rhythmRing.color = newColor;
+
+        if (_resetColorCoroutine != null)
         {
-            rhythmRing.color = perfectColor;
-            isHighlighting = true;
+            StopCoroutine(_resetColorCoroutine);
         }
+        _resetColorCoroutine = StartCoroutine(ResetColor());
+    }
+
+    IEnumerator ResetColor()
+    {
+        yield return new WaitForSeconds(_playerRhythm.boolWaitTime);
+        _baseColor = defaultColor;
+        _rhythmRing.color = _baseColor;
     }
 }

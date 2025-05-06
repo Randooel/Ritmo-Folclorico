@@ -6,10 +6,12 @@ public class Conductor : MonoBehaviour
 {
     // READ ME: This script is responsible for keeping track the music's rythm and
     // current position (in seconds)
+    [Header("ATENTION: ONLY THE 'songPosition' FIELD MUST BE EDITED.")]
+    [Header("All other fields are filled automatically")]
 
     [Header("Song Info")]
-    [SerializeField] private float songBpm;
-    [SerializeField] private float secPerBeat;
+    [SerializeField] private float _songBpm;
+    [SerializeField] private float _secPerBeat;
 
     [Header("Song Position")]
     // Current song position in seconds
@@ -19,7 +21,7 @@ public class Conductor : MonoBehaviour
     // How many seconds have passed since song started
     public float dspSongTime;
 
-    [Header("Audio Source")]
+    [Header("Audio Source Reference")]
     public AudioSource musicSource;
 
 
@@ -33,7 +35,7 @@ public class Conductor : MonoBehaviour
         }
 
         // Calculate the number of seconds in each beat
-        secPerBeat = 60f / songBpm;
+        _secPerBeat = 60f / _songBpm;
 
         // Record the time when music started
         dspSongTime = (float)AudioSettings.dspTime;
@@ -49,6 +51,6 @@ public class Conductor : MonoBehaviour
         songPosition = (float)(AudioSettings.dspTime - dspSongTime);
 
         // Determine how many beats passed since song started playing
-        songPositionInBeats = songPosition / secPerBeat;
+        songPositionInBeats = songPosition / _secPerBeat;
     }
 }

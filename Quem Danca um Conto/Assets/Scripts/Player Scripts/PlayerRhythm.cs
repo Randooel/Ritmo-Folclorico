@@ -10,6 +10,9 @@ public class PlayerRhythm : MonoBehaviour
 
     public float beatWhenButtonPressed;
 
+    public delegate void OnHitDelegate(string hitType);
+    public event OnHitDelegate OnHit;
+
     [Header("Timing Interval for Correct Input")]
     [Header("Ex: Defines as *0*.7 / *1*.3")]
     [Range(0,2)] public float minCorrectTime = 0.7f;
@@ -17,7 +20,7 @@ public class PlayerRhythm : MonoBehaviour
     
 
     [Header("Timing Interval for Perfect Input")]
-    [Header("Ex: Define as *0*.9 / *1*.1")]
+    [Header("Ex: Define MIN as *0*.X / MAX: *1*.Y")]
     [Range(0,2)] public float minPerfectTime = 0.9f;
     [Range(0,2)] public float maxPerfectTime = 1.1f;
 
@@ -25,6 +28,7 @@ public class PlayerRhythm : MonoBehaviour
     public bool hitWrong;
     public bool hitCorrect;
     public bool hitPerfect;
+    [Range(0f,1f)] public float boolWaitTime;
 
     void Start()
     {
@@ -37,7 +41,7 @@ public class PlayerRhythm : MonoBehaviour
 
     void BeatInput()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1))
         {
             // Marks when the player pressed the button based on the Conductor's beat counting
             beatWhenButtonPressed = conductor.songPositionInBeats;
@@ -50,33 +54,31 @@ public class PlayerRhythm : MonoBehaviour
                 if (beatWhenButtonPressed >= beatTime + minPerfectTime && beatWhenButtonPressed < beatTime + maxPerfectTime)
                 {
                     hitPerfect = true;
+                    OnHit?.Invoke("Perfect");
+                    Debug.Log("PERFECT!");
                 }
                 else
                 {
                     hitCorrect = true;
+                    OnHit?.Invoke("Correct");
+                    Debug.Log("Correct!");
                 }
             }
             else
             {
                 hitWrong = true;
+                OnHit?.Invoke("Wrong");
+                Debug.Log("Wrong!");
             }
         }
-        ResetBooleans();
+        StartCoroutine(ResetBools());
     }
 
-    void ResetBooleans()
+    IEnumerator ResetBools()
     {
-        if(hitWrong)
-        {
-            hitWrong = false;
-        }
-        if(hitCorrect)
-        {
-            hitCorrect = false;
-        }
-        if(hitPerfect)
-        {
-            hitPerfect = false;
-        }
+        yield return new WaitForSeconds(boolWaitTime);
+        hitWrong = false;
+        hitCorrect = false;
+        hitPerfect = false;
     }
 }
