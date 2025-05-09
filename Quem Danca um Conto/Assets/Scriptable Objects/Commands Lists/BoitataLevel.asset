@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f45cacc8274cd0a4fb441878ebf0bc5d, type: 3}
-  m_Name: BasicCommands
+  m_Name: BoitataLevel
   m_EditorClassIdentifier: 
   commandCombinations:
-  - name: Walk
-    mouseButtons: 00000000000000000000000001000000
-  - name: Rescue1
-    mouseButtons: 00000000010000000000000001000000
-  - name: Rescue2
-    mouseButtons: 01000000010000000000000001000000
+  - name: Put out Fire
+    mouseButtons: 00000000000000000100000000000000
+  - name: Rescue Animal1
+    mouseButtons: 00000000000000000100000001000000
+  - name: Rescue Animal2
+    mouseButtons: 01000000010000000000000000000000
