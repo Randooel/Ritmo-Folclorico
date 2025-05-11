@@ -12,6 +12,7 @@ public class HudManager : MonoBehaviour
     private Coroutine _resetColorCoroutine;
 
     [SerializeField] private Image _rhythmRing;
+    [SerializeField] private Image[] onomatopeia;
 
     [Header("Color Settings")]
     public Color defaultColor = Color.white;
@@ -33,6 +34,9 @@ public class HudManager : MonoBehaviour
 
         _baseColor = defaultColor;
         _rhythmRing.color = _baseColor;
+
+        onomatopeia[0].gameObject.SetActive(false);
+        onomatopeia[1].gameObject.SetActive(false);
     }
 
     void Update()

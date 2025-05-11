@@ -5,8 +5,9 @@ using UnityEngine;
 public class PlayerCommands : MonoBehaviour
 {
     // READ ME: THIS SCRIPT CHECKS IF THE PLAYER'S INPUTS MATCH A VALID COMMAND IF SO, IT EXECUTES IT
-    
 
+    [Header("Player Commands")]
+    public List<int> mouseButtonPressed = new List<int>();
     void Start()
     {
         

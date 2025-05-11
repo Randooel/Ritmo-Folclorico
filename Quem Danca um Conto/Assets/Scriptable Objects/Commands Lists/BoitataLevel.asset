@@ -13,9 +13,11 @@ MonoBehaviour:
   m_Name: BoitataLevel
   m_EditorClassIdentifier: 
   commandCombinations:
-  - name: Put out Fire
-    mouseButtons: 00000000000000000100000000000000
+  - name: Put out Fire1
+    mouseButtons: 01000000010000000100000002000000
+  - name: Put out Fire2
+    mouseButtons: 01000000010000000100000002000000
   - name: Rescue Animal1
-    mouseButtons: 00000000000000000100000001000000
+    mouseButtons: 01000000010000000200000002000000
   - name: Rescue Animal2
-    mouseButtons: 01000000010000000000000000000000
+    mouseButtons: 02000000020000000100000001000000

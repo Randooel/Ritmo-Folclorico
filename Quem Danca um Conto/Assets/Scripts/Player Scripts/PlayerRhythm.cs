@@ -7,14 +7,12 @@ public class PlayerRhythm : MonoBehaviour
 {
     // READ ME: THIS SCRIPT CHECKS HOW WELL PLAYER'S INPUT MATCH THE SONG'S BEAT
     private Conductor conductor;
+    private PlayerCommands playerCommands;
 
     public float beatWhenButtonPressed;    
 
     public delegate void OnHitDelegate(string hitType);
     public event OnHitDelegate OnHit;
-
-    [Header("Player Commands")]
-    public List<int> mouseButtonPressed = new List<int>();
 
     [Header("Timing Interval for Correct Input")]
     [Header("Ex: Defines as *0*.7 / *1*.3")]
@@ -36,6 +34,7 @@ public class PlayerRhythm : MonoBehaviour
     void Start()
     {
         conductor = FindObjectOfType<Conductor>();
+        playerCommands = FindObjectOfType<PlayerCommands>();
     }
     void Update()
     {
@@ -46,13 +45,13 @@ public class PlayerRhythm : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1))
         {
-            if(mouseButtonPressed.Count <= 4)
+            if(playerCommands.mouseButtonPressed.Count <= 4)
             {
                 CheckMouseButtonPressed();
             }
-            if(mouseButtonPressed.Count > 4)
+            if(playerCommands.mouseButtonPressed.Count > 4)
             {
-                mouseButtonPressed.Clear();
+                playerCommands.mouseButtonPressed.Clear();
 
                 CheckMouseButtonPressed();
             }
@@ -101,11 +100,11 @@ public class PlayerRhythm : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            mouseButtonPressed.Add(1);
+            playerCommands.mouseButtonPressed.Add(1);
         }
         else if (Input.GetMouseButtonDown(1))
         {
-            mouseButtonPressed.Add(2);
+            playerCommands.mouseButtonPressed.Add(2);
         }
     }
 }

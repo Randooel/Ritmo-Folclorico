@@ -5,23 +5,17 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "CommandsList", menuName = "CommandsList")]
 public class CommandCombinations : ScriptableObject
 {
-    public enum MouseButton
-    {
-        MouseButton0 = 0,
-        MouseButton1 = 1
-    }
-
     [System.Serializable]
     public class CommandCombination
     {
-        public string name;
-        public List<MouseButton> mouseButtons = new List<MouseButton>();
+        public string commandName;
+        public List<int> commandSequence = new List<int>();
     }
 
-    public List<CommandCombination> commandCombinations = new List<CommandCombination>();
+    public List<CommandCombination> commandSets = new List<CommandCombination>();
 
     public List<CommandCombination> GetCommandCombinations()
     {
-        return commandCombinations;
+        return commandSets;
     }
 }
