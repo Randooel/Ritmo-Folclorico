@@ -12,12 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f45cacc8274cd0a4fb441878ebf0bc5d, type: 3}
   m_Name: BoitataLevel
   m_EditorClassIdentifier: 
-  commandCombinations:
-  - name: Put out Fire1
-    mouseButtons: 01000000010000000100000002000000
-  - name: Put out Fire2
-    mouseButtons: 01000000010000000100000002000000
-  - name: Rescue Animal1
-    mouseButtons: 01000000010000000200000002000000
-  - name: Rescue Animal2
-    mouseButtons: 02000000020000000100000001000000
+  commandSets:
+  - commandName: PutOutFire1
+    commandSequence: 0200000001000000020000000100000002000000
+  - commandName: PutOutFire2
+    commandSequence: 0100000002000000010000000200000001000000
+  - commandName: Boitata1
+    commandSequence: 0100000002000000010000000200000002000000
+  - commandName: Boitata2
+    commandSequence: 0100000002000000010000000200000002000000
+  - commandName: Boitata3
+    commandSequence: 0000000001000000000000000100000001000000

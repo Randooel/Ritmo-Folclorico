@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f45cacc8274cd0a4fb441878ebf0bc5d, type: 3}
   m_Name: BasicCommands
   m_EditorClassIdentifier: 
-  commandCombinations:
-  - name: Walk
-    mouseButtons: 01000000010000000200000001000000
-  - name: Rescue1
-    mouseButtons: 01000000020000000100000002000000
-  - name: Rescue2
-    mouseButtons: 02000000020000000100000002000000
+  commandSets:
+  - commandName: Walk
+    commandSequence: 0100000001000000020000000100000002000000
+  - commandName: SaveNpc1
+    commandSequence: 0100000001000000020000000200000002000000
+  - commandName: SaveNpc2
+    commandSequence: 0200000002000000010000000100000001000000

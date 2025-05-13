@@ -24,6 +24,11 @@ public class Conductor : MonoBehaviour
     [Header("Audio Source Reference")]
     public AudioSource musicSource;
 
+    public float SecPerBeat 
+    {
+        get { return _secPerBeat; }
+        private set { _secPerBeat = value;  }  
+    }
 
     void Start()
     {
@@ -35,7 +40,7 @@ public class Conductor : MonoBehaviour
         }
 
         // Calculate the number of seconds in each beat
-        _secPerBeat = 60f / _songBpm;
+        SecPerBeat = 60f / _songBpm;
 
         // Record the time when music started
         dspSongTime = (float)AudioSettings.dspTime;
@@ -51,6 +56,6 @@ public class Conductor : MonoBehaviour
         songPosition = (float)(AudioSettings.dspTime - dspSongTime);
 
         // Determine how many beats passed since song started playing
-        songPositionInBeats = songPosition / _secPerBeat;
+        songPositionInBeats = songPosition / SecPerBeat;
     }
 }

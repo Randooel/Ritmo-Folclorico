@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerRhythm : MonoBehaviour
 {
@@ -9,7 +10,9 @@ public class PlayerRhythm : MonoBehaviour
     private Conductor conductor;
     private PlayerCommands playerCommands;
 
-    public float beatWhenButtonPressed;    
+    [Header("Button Set")]
+    public float beatWhenButtonPressed;
+    [SerializeField] Image[] onomatopeia;    
 
     public delegate void OnHitDelegate(string hitType);
     public event OnHitDelegate OnHit;
@@ -35,6 +38,9 @@ public class PlayerRhythm : MonoBehaviour
     {
         conductor = FindObjectOfType<Conductor>();
         playerCommands = FindObjectOfType<PlayerCommands>();
+
+        onomatopeia[0].gameObject.SetActive(false);
+        onomatopeia[1].gameObject.SetActive(false);
     }
     void Update()
     {
@@ -101,10 +107,24 @@ public class PlayerRhythm : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             playerCommands.mouseButtonPressed.Add(1);
+
+            onomatopeia[0].gameObject.SetActive(true);
+            StartCoroutine(ResetOnomatopeia());
         }
         else if (Input.GetMouseButtonDown(1))
         {
             playerCommands.mouseButtonPressed.Add(2);
+
+            onomatopeia[1].gameObject.SetActive(true);
+            StartCoroutine(ResetOnomatopeia());
         }
+    }
+
+    IEnumerator ResetOnomatopeia()
+    {
+        yield return new WaitForSeconds(boolWaitTime);
+
+        onomatopeia[0].gameObject.SetActive(false);
+        onomatopeia[1].gameObject.SetActive(false);
     }
 }
