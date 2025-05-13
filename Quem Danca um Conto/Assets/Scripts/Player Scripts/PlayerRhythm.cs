@@ -9,10 +9,15 @@ public class PlayerRhythm : MonoBehaviour
     // READ ME: THIS SCRIPT CHECKS HOW WELL PLAYER'S INPUT MATCH THE SONG'S BEAT
     private Conductor conductor;
     private PlayerCommands playerCommands;
+    [SerializeField] Animator animator;
 
     [Header("Button Set")]
     public float beatWhenButtonPressed;
-    [SerializeField] Image[] onomatopeia;    
+
+    [Header("Visual Feedbacks")]
+    [SerializeField] Image[] onomatopeia;
+    [SerializeField] Image[] commandPrint;
+    [SerializeField] Sprite[] spritesPrint;
 
     public delegate void OnHitDelegate(string hitType);
     public event OnHitDelegate OnHit;
@@ -39,6 +44,10 @@ public class PlayerRhythm : MonoBehaviour
         conductor = FindObjectOfType<Conductor>();
         playerCommands = FindObjectOfType<PlayerCommands>();
 
+        animator = GetComponent<Animator>();
+
+        DeactivateCommandPrint();
+
         onomatopeia[0].gameObject.SetActive(false);
         onomatopeia[1].gameObject.SetActive(false);
     }
@@ -51,15 +60,17 @@ public class PlayerRhythm : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1))
         {
-            if(playerCommands.mouseButtonPressed.Count <= 4)
+            if(playerCommands.mouseButtonPressed.Count < 4)
             {
                 CheckMouseButtonPressed();
             }
-            if(playerCommands.mouseButtonPressed.Count > 4)
+            else if(playerCommands.mouseButtonPressed.Count >= 4)
             {
                 playerCommands.mouseButtonPressed.Clear();
 
+                DeactivateCommandPrint();
                 CheckMouseButtonPressed();
+                
             }
             
 
@@ -88,6 +99,9 @@ public class PlayerRhythm : MonoBehaviour
             {
                 hitWrong = true;
                 OnHit?.Invoke("Wrong");
+
+                // Clear the current command list if the player gets the rhythm wrong
+                OnWrongTime();
                 Debug.Log("Wrong!");
             }
         }
@@ -104,19 +118,52 @@ public class PlayerRhythm : MonoBehaviour
 
     private void CheckMouseButtonPressed()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0)) 
         {
+            int index = playerCommands.mouseButtonPressed.Count;
+
             playerCommands.mouseButtonPressed.Add(1);
+
+            if (index < commandPrint.Length)
+            {
+                commandPrint[index].sprite = spritesPrint[0];
+                commandPrint[index].gameObject.SetActive(true);
+            }
 
             onomatopeia[0].gameObject.SetActive(true);
             StartCoroutine(ResetOnomatopeia());
+            return;
         }
-        else if (Input.GetMouseButtonDown(1))
+        if (Input.GetMouseButtonDown(1))
         {
+            int index = playerCommands.mouseButtonPressed.Count;
+
             playerCommands.mouseButtonPressed.Add(2);
+
+            if (index < commandPrint.Length)
+            {
+                commandPrint[index].sprite = spritesPrint[1];
+                commandPrint[index].gameObject.SetActive(true);
+            }
 
             onomatopeia[1].gameObject.SetActive(true);
             StartCoroutine(ResetOnomatopeia());
+            return;
+        }
+    }
+
+    private void OnWrongTime()
+    {
+        playerCommands.mouseButtonPressed.Clear();
+
+        DeactivateCommandPrint();
+    }
+
+    void DeactivateCommandPrint()
+    {
+        foreach (var img in commandPrint)
+        {
+            img.gameObject.SetActive(false);
         }
     }
 
