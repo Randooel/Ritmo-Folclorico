@@ -10,7 +10,7 @@ public class PlayerCommands : MonoBehaviour
     public List<int> mouseButtonPressed = new List<int>();
     void Start()
     {
-        
+          
     }
 
     // Update is called once per frame

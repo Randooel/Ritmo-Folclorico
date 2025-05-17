@@ -23,7 +23,7 @@ public class HudManager : MonoBehaviour
     [Header("Opacity Setting")]
     [SerializeField][Range(0f, 1f)] private float _defaultAlpha = 0.25f;
     [SerializeField][Range(0f, 1f)] private float _targetAlpha = 0.5f;
-    [SerializeField][Range(0f, 1f)] private float _highlightAlpha = 1f;
+    //[SerializeField][Range(0f, 1f)] private float _highlightAlpha = 1f;
     void Start()
     {
         _conductor = FindObjectOfType<Conductor>();

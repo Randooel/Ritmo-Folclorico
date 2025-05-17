@@ -12,8 +12,8 @@ public class WhistlerBrain : MonoBehaviour
     private enum State
     {
         Idle,
-        Whistling,
-        Walking
+        Whistle,
+        Walk
     }
 
     [SerializeField] private State currentState;
@@ -22,8 +22,9 @@ public class WhistlerBrain : MonoBehaviour
     [SerializeField] private float whistleWaitTime;
     // [SerializeField] private float comandName;
 
+    private Collider2D collider;
+
     [SerializeField] private List<int> currentCommandSequence;
-    [SerializeField] private string currentCommandName;
 
     [Header("Onomatopeia Objects")]
     [SerializeField] private GameObject[] onomatopeia;
@@ -40,6 +41,7 @@ public class WhistlerBrain : MonoBehaviour
         conductor = FindObjectOfType<Conductor>();
 
         animator = GetComponent<Animator>();
+        collider = GetComponent<Collider2D>();
 
         currentState = State.Idle;
 
@@ -55,7 +57,24 @@ public class WhistlerBrain : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
+    // INPUT
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (collided)
+        {
+            return;
+        }
+        else if (other.gameObject.CompareTag("LostNpc"))
+        {
+            currentCommandSequence = basicCommands.commandSets[1].commandSequence;
+
+            collided = true;
+
+            currentState = State.Whistle;
+        }
+    }
+
+    // EVALUATION
     void Update()
     {
         switch (currentState)
@@ -63,71 +82,34 @@ public class WhistlerBrain : MonoBehaviour
             case State.Idle:
                 HandleIdle();
                 break;
-            case State.Whistling:
-                HandleWhistling();
+            case State.Whistle:
+                HandleWhistle();
                 break;
-            case State.Walking:
+            case State.Walk:
                 HandleWalk();
                 break;
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        if(collided)
-        {
-            return;
-        }
-        if(other.gameObject.CompareTag("LostNpc"))
-        {
-            currentCommandName = "SaveNpc1";
-
-            collided = true;
-
-            ReadCommand();
-        }
-    }
-
-    void ReadCommand()
-    {
-        switch (currentCommandName)
-        {
-            case "Walk":
-                HandleWalk();
-                break;
-            case "SaveNpc1":
-                HandleSaveNpc();
-                break;
-            case "PutOutFire1":
-                HandlePutOutFire();
-                break;
-            case "Boitata1":
-                HandleBoitataDance();
-                break;
-        }
-    }
-
+    // OUTPUT
     void HandleIdle()
     {
-        // animator.SetTrigger("Idle");
+        collider.enabled = true;
     }
 
-    void HandleWhistling()
+    void HandleWhistle()
     {
+        collider.enabled = false;
 
+        if (currentCoroutine == null)
+        {
+            currentCoroutine = StartCoroutine(ExecuteCurrentSequence());
+        }
     }
 
     void HandleWalk()
     {
-        currentState = State.Walking;
-    }
-    void HandleSaveNpc()
-    {
-        Debug.Log("SAVE NPC!");
-
-        currentCommandSequence = basicCommands.commandSets[1].commandSequence;
-
-        StartCoroutine(ExecuteCurrentSequence());
+        
     }
 
     void HandlePutOutFire()
@@ -142,10 +124,11 @@ public class WhistlerBrain : MonoBehaviour
 
     IEnumerator ExecuteCurrentSequence()
     {
+        Debug.Log("Bombardira Coroutina");
         for (int i = 0; i < currentCommandSequence.Count;  i++)
         {
             Debug.Log(i);
-            if(currentCommandSequence[i] == 1)
+            if (currentCommandSequence[i] == 1)
             {
                 onomatopeia[0].gameObject.SetActive(true);
             }
@@ -153,35 +136,22 @@ public class WhistlerBrain : MonoBehaviour
             {
                 onomatopeia[1].gameObject.SetActive(true);
             }
-            yield return new WaitForSeconds(0.3f);
+
+            yield return new WaitForSeconds(0.4f);
 
             onomatopeia[0].gameObject.SetActive(false);
             onomatopeia[1].gameObject.SetActive(false);
-        }
-    }
 
-    /*
-    public void ReadCommandSetByName(string name)
-    {
-        var selectedSet = basicCommands.commandSets.Find(set => set.commandName == name);
-        
-        if(selectedSet != null)
-        {
-            foreach (var command in selectedSet.commandSequence)
-            {
-                Debug.Log(command);
-            }
+            yield return new WaitForSeconds(0.4f);
         }
-        else
-        {
-            Debug.LogError($"Command with name {name} not found!");
-        }
+
+        currentCoroutine = null;
+
+        currentState = State.Idle;
     }
-    */
 
     IEnumerator Reset()
     {
         yield return new WaitForSeconds(whistleWaitTime);
-
     }
 }

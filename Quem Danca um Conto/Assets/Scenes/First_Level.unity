@@ -323,7 +323,7 @@ Transform:
   m_GameObject: {fileID: 340198893}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4.08, y: -2.36, z: 0}
+  m_LocalPosition: {x: -4, y: -2.36, z: 0}
   m_LocalScale: {x: 0.67, y: 0.67, z: 0.67}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -391,7 +391,6 @@ MonoBehaviour:
   currentState: 0
   whistleWaitTime: 0
   currentCommandSequence: 
-  currentCommandName: 
   onomatopeia:
   - {fileID: 1010898141}
   - {fileID: 1188450218}
@@ -458,7 +457,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.28940132, y: 0.1563786}
   m_AnchorMax: {x: 0.46760198, y: 0.8436214}
-  m_AnchoredPosition: {x: 0.099998474, y: 0}
+  m_AnchoredPosition: {x: 0.1000061, y: 0}
   m_SizeDelta: {x: 1, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &381861117
@@ -1022,7 +1021,6 @@ MonoBehaviour:
   wrongColor: {r: 1, g: 0, b: 0, a: 1}
   _defaultAlpha: 0.5
   _targetAlpha: 0.7
-  _highlightAlpha: 1
 --- !u!1 &932695092
 GameObject:
   m_ObjectHideFlags: 0
@@ -1581,7 +1579,6 @@ MonoBehaviour:
   wrongColor: {r: 1, g: 0, b: 0, a: 1}
   _defaultAlpha: 0.25
   _targetAlpha: 0.5
-  _highlightAlpha: 1
 --- !u!1 &1004376520
 GameObject:
   m_ObjectHideFlags: 0
@@ -5862,7 +5859,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.04280265, y: 0.1563786}
   m_AnchorMax: {x: 0.22279936, y: 0.8436214}
-  m_AnchoredPosition: {x: 0.19998169, y: 0}
+  m_AnchoredPosition: {x: 0.19995117, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1256063693
@@ -6048,7 +6045,6 @@ MonoBehaviour:
   wrongColor: {r: 1, g: 0, b: 0, a: 1}
   _defaultAlpha: 0.25
   _targetAlpha: 0.5
-  _highlightAlpha: 1
 --- !u!1 &1327057344
 GameObject:
   m_ObjectHideFlags: 0
@@ -6441,7 +6437,6 @@ MonoBehaviour:
   wrongColor: {r: 1, g: 0, b: 0, a: 1}
   _defaultAlpha: 0.25
   _targetAlpha: 0.5
-  _highlightAlpha: 1
 --- !u!1 &1835099468
 GameObject:
   m_ObjectHideFlags: 0
@@ -6940,7 +6935,6 @@ MonoBehaviour:
   wrongColor: {r: 1, g: 0, b: 0, a: 1}
   _defaultAlpha: 0.25
   _targetAlpha: 0.5
-  _highlightAlpha: 1
 --- !u!1 &2071295943
 GameObject:
   m_ObjectHideFlags: 0
