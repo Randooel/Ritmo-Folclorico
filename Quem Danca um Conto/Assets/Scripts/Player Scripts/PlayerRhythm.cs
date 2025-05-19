@@ -9,15 +9,19 @@ public class PlayerRhythm : MonoBehaviour
     // READ ME: THIS SCRIPT CHECKS HOW WELL PLAYER'S INPUT MATCH THE SONG'S BEAT
     private Conductor conductor;
     private PlayerCommands playerCommands;
+    private WhistlerBrain whistlerBrain;
     [SerializeField] Animator animator;
 
     [Header("Button Set")]
     public float beatWhenButtonPressed;
+    private bool _wasWrongTime = false;
+    
 
     [Header("Visual Feedbacks")]
     [SerializeField] Image[] onomatopeia;
     [SerializeField] Image[] commandPrint;
     [SerializeField] Sprite[] spritesPrint;
+    [SerializeField] bool _isCommandPrintCleared;
 
     public delegate void OnHitDelegate(string hitType);
     public event OnHitDelegate OnHit;
@@ -43,10 +47,13 @@ public class PlayerRhythm : MonoBehaviour
     {
         conductor = FindObjectOfType<Conductor>();
         playerCommands = FindObjectOfType<PlayerCommands>();
+        whistlerBrain = FindObjectOfType<WhistlerBrain>();
 
         animator = GetComponent<Animator>();
 
         DeactivateCommandPrint();
+
+        _isCommandPrintCleared = true;
 
         onomatopeia[0].gameObject.SetActive(false);
         onomatopeia[1].gameObject.SetActive(false);
@@ -60,17 +67,28 @@ public class PlayerRhythm : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1))
         {
+            if(_wasWrongTime)
+            {
+                _wasWrongTime = false;
+                return;
+            }
             if(playerCommands.mouseButtonPressed.Count < 4)
             {
                 CheckMouseButtonPressed();
+                _isCommandPrintCleared = false;
             }
-            else if(playerCommands.mouseButtonPressed.Count >= 4)
+            else
             {
-                playerCommands.mouseButtonPressed.Clear();
+                // OnCompletedComand();
+
+                if(!_isCommandPrintCleared)
+                {
+                    playerCommands.mouseButtonPressed.Clear();
+                    _isCommandPrintCleared = true;
+                }
 
                 DeactivateCommandPrint();
                 CheckMouseButtonPressed();
-                
             }
             
 
@@ -152,15 +170,43 @@ public class PlayerRhythm : MonoBehaviour
         }
     }
 
+    private void OnCompletedCommand()
+    {
+        // Checks if the inserted command sequence matches the whistler's command sequence
+        for (int i = 0; i <= 4; i++)
+        {
+            Debug.LogWarning("OnCompletedCommand");
+            if (playerCommands.mouseButtonPressed[i] != whistlerBrain.CurrentCommandSequence[i])
+            {
+                Debug.LogError("OnWrongTime");
+
+                OnWrongTime();
+            }
+        }
+        Debug.LogError("ExecuteAction");
+        ExecuteAction();
+    }
+
+    void ExecuteAction()
+    {
+
+    }
+
     private void OnWrongTime()
     {
-        playerCommands.mouseButtonPressed.Clear();
+        if(!_isCommandPrintCleared)
+        {
+            playerCommands.mouseButtonPressed.Clear();
+            _isCommandPrintCleared = true;
+            _wasWrongTime = true;
 
-        DeactivateCommandPrint();
+            DeactivateCommandPrint();
+        }
     }
 
     void DeactivateCommandPrint()
     {
+        
         foreach (var img in commandPrint)
         {
             img.gameObject.SetActive(false);

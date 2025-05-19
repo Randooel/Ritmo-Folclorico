@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using UnityEngine;
 
 public class WhistlerBrain : MonoBehaviour
@@ -16,8 +17,11 @@ public class WhistlerBrain : MonoBehaviour
         Walk
     }
 
-    [SerializeField] private State currentState;
+    [Space(20)]
+    [SerializeField] private State _currentState;
+    // private bool iamPaullo;
     private Coroutine currentCoroutine;
+
     [Header("Whistle Settings")]
     [SerializeField] private float whistleWaitTime;
     // [SerializeField] private float comandName;
@@ -25,6 +29,7 @@ public class WhistlerBrain : MonoBehaviour
     private Collider2D collider;
 
     [SerializeField] private List<int> currentCommandSequence;
+    public List<int> CurrentCommandSequence { get => currentCommandSequence; set => currentCommandSequence = value; }
 
     [Header("Onomatopeia Objects")]
     [SerializeField] private GameObject[] onomatopeia;
@@ -35,6 +40,8 @@ public class WhistlerBrain : MonoBehaviour
     public CommandCombinations basicCommands;
     public CommandCombinations boitataCommands;
 
+    
+
     void Start()
     {
         playerCommands = FindObjectOfType<PlayerCommands>();
@@ -43,7 +50,7 @@ public class WhistlerBrain : MonoBehaviour
         animator = GetComponent<Animator>();
         collider = GetComponent<Collider2D>();
 
-        currentState = State.Idle;
+        _currentState = State.Idle;
 
         onomatopeia[0].gameObject.SetActive(false);
         onomatopeia[1].gameObject.SetActive(false);
@@ -64,20 +71,23 @@ public class WhistlerBrain : MonoBehaviour
         {
             return;
         }
-        else if (other.gameObject.CompareTag("LostNpc"))
+        
+        if (other.gameObject.CompareTag("LostNpc"))
         {
-            currentCommandSequence = basicCommands.commandSets[1].commandSequence;
+            CurrentCommandSequence = basicCommands.commandSets[1].commandSequence;
 
             collided = true;
 
-            currentState = State.Whistle;
+            _currentState = State.Whistle;
         }
     }
+
+
 
     // EVALUATION
     void Update()
     {
-        switch (currentState)
+        switch (_currentState)
         {
             case State.Idle:
                 HandleIdle();
@@ -86,7 +96,7 @@ public class WhistlerBrain : MonoBehaviour
                 HandleWhistle();
                 break;
             case State.Walk:
-                HandleWalk();
+                //HandleWalk();
                 break;
         }
     }
@@ -95,6 +105,11 @@ public class WhistlerBrain : MonoBehaviour
     void HandleIdle()
     {
         collider.enabled = true;
+
+        StartCoroutine(WaitToWalk());
+        CurrentCommandSequence = basicCommands.commandSets[0].commandSequence;
+
+        _currentState = State.Whistle;
     }
 
     void HandleWhistle()
@@ -107,32 +122,16 @@ public class WhistlerBrain : MonoBehaviour
         }
     }
 
-    void HandleWalk()
-    {
-        
-    }
-
-    void HandlePutOutFire()
-    {
-
-    }
-
-    void HandleBoitataDance()
-    {
-
-    }
-
     IEnumerator ExecuteCurrentSequence()
     {
-        Debug.Log("Bombardira Coroutina");
-        for (int i = 0; i < currentCommandSequence.Count;  i++)
+        for (int i = 0; i < CurrentCommandSequence.Count;  i++)
         {
-            Debug.Log(i);
-            if (currentCommandSequence[i] == 1)
+            // Debug.Log(i);
+            if (CurrentCommandSequence[i] == 1)
             {
                 onomatopeia[0].gameObject.SetActive(true);
             }
-            else if (currentCommandSequence[i] == 2)
+            else if (CurrentCommandSequence[i] == 2)
             {
                 onomatopeia[1].gameObject.SetActive(true);
             }
@@ -145,9 +144,16 @@ public class WhistlerBrain : MonoBehaviour
             yield return new WaitForSeconds(0.4f);
         }
 
+        yield return new WaitForSeconds(0.4f);
+
         currentCoroutine = null;
 
-        currentState = State.Idle;
+        _currentState = State.Idle;
+    }
+
+    IEnumerator WaitToWalk()
+    {
+        yield return new WaitForSeconds(2f);
     }
 
     IEnumerator Reset()
