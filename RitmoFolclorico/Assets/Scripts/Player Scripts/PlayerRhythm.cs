@@ -14,7 +14,7 @@ public class PlayerRhythm : MonoBehaviour
 
     [Header("Button Set")]
     public float beatWhenButtonPressed;
-    private bool _wasWrongTime = false;
+    [SerializeField] private bool _wasWrongTime = false;
     
 
     [Header("Visual Feedbacks")]
@@ -67,63 +67,71 @@ public class PlayerRhythm : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1))
         {
-            if(_wasWrongTime)
+            if(playerCommands.commandable)
             {
-                _wasWrongTime = false;
-                return;
-            }
-            if(playerCommands.mouseButtonPressed.Count < 4)
-            {
-                CheckMouseButtonPressed();
-                _isCommandPrintCleared = false;
-            }
-            else
-            {
-                // OnCompletedComand();
-
-                if(!_isCommandPrintCleared)
+                if(_wasWrongTime)
                 {
-                    playerCommands.mouseButtonPressed.Clear();
-                    _isCommandPrintCleared = true;
+                    _wasWrongTime = false;
+                    return;
+                }
+                if(playerCommands.mouseButtonPressed.Count < 4)
+                {
+                    CheckMouseButtonPressed();
+                    _isCommandPrintCleared = false;
+                }
+                
+                else
+                {
+                    // OnCompletedComand();
+
+                    if (!_isCommandPrintCleared)
+                    {
+                        playerCommands.mouseButtonPressed.Clear();
+                        _isCommandPrintCleared = true;
+                    }
+
+                    DeactivateCommandPrint();
+                    CheckMouseButtonPressed();
                 }
 
-                DeactivateCommandPrint();
-                CheckMouseButtonPressed();
-            }
-            
+                // Marks when the player pressed the button based on the Conductor's beat counting
+                beatWhenButtonPressed = conductor.songPositionInBeats;
 
-            // Marks when the player pressed the button based on the Conductor's beat counting
-            beatWhenButtonPressed = conductor.songPositionInBeats;
+                // Gets the songPositionInBeats and turns it into a integer
+                int beatTime = Mathf.FloorToInt(conductor.songPositionInBeats);
 
-            // Gets the songPositionInBeats and turns it into a integer
-            int beatTime = Mathf.FloorToInt(conductor.songPositionInBeats);
-
-            if (beatWhenButtonPressed >= beatTime + minCorrectTime && beatWhenButtonPressed <= beatTime + maxCorrectTime)
-            {
-                if (beatWhenButtonPressed >= beatTime + minPerfectTime && beatWhenButtonPressed < beatTime + maxPerfectTime)
+                if (beatWhenButtonPressed >= beatTime + minCorrectTime && beatWhenButtonPressed <= beatTime + maxCorrectTime)
                 {
-                    hitPerfect = true;
-                    OnHit?.Invoke("Perfect");
-                    Debug.Log("PERFECT!");
+                    if (beatWhenButtonPressed >= beatTime + minPerfectTime && beatWhenButtonPressed < beatTime + maxPerfectTime)
+                    {
+                        hitPerfect = true;
+                        OnHit?.Invoke("Perfect");
+                        Debug.Log("PERFECT!");
+                    }
+                    else
+                    {
+                        hitCorrect = true;
+                        OnHit?.Invoke("Correct");
+                        Debug.Log("Correct!");
+                    }
                 }
                 else
                 {
-                    hitCorrect = true;
-                    OnHit?.Invoke("Correct");
-                    Debug.Log("Correct!");
+                    hitWrong = true;
+                    OnHit?.Invoke("Wrong");
+
+                    // Clear the current command list if the player gets the rhythm wrong
+                    OnWrongTime();
+                    Debug.Log("Wrong!");
                 }
             }
-            else
-            {
-                hitWrong = true;
-                OnHit?.Invoke("Wrong");
+            StartCoroutine(ResetBools());
 
-                // Clear the current command list if the player gets the rhythm wrong
-                OnWrongTime();
-                Debug.Log("Wrong!");
+            if (playerCommands.mouseButtonPressed.Count == 4)
+            {
+                OnCompletedCommand();
             }
         }
-        StartCoroutine(ResetBools());
     }
 
     IEnumerator ResetBools()
@@ -173,23 +181,38 @@ public class PlayerRhythm : MonoBehaviour
     private void OnCompletedCommand()
     {
         // Checks if the inserted command sequence matches the whistler's command sequence
-        for (int i = 0; i <= 4; i++)
+        for (int i = 0; i < 4; i++)
         {
-            Debug.LogWarning("OnCompletedCommand");
             if (playerCommands.mouseButtonPressed[i] != whistlerBrain.CurrentCommandSequence[i])
             {
-                Debug.LogError("OnWrongTime");
+                Debug.LogWarning("OnWrongTime");
 
-                OnWrongTime();
+                StartCoroutine(OnWaitToWrong());
             }
         }
-        Debug.LogError("ExecuteAction");
-        ExecuteAction();
+
+        StartCoroutine(OnExecuteAction());
     }
 
-    void ExecuteAction()
+    IEnumerator OnExecuteAction()
     {
+        playerCommands.commandable = false;
+        Debug.LogError(playerCommands.mouseButtonPressed[0]);
 
+        // Action logic goes here
+
+        yield return new WaitForSeconds(1f);
+
+        playerCommands.mouseButtonPressed.Clear();
+        DeactivateCommandPrint();
+
+        playerCommands.commandable = true;
+    }
+
+    IEnumerator OnWaitToWrong()
+    {
+        yield return new WaitForSeconds(1f);
+        OnWrongTime();
     }
 
     private void OnWrongTime()
@@ -197,16 +220,15 @@ public class PlayerRhythm : MonoBehaviour
         if(!_isCommandPrintCleared)
         {
             playerCommands.mouseButtonPressed.Clear();
-            _isCommandPrintCleared = true;
-            _wasWrongTime = true;
-
             DeactivateCommandPrint();
+
+            _isCommandPrintCleared = true;
+            //_wasWrongTime = true;
         }
     }
 
     void DeactivateCommandPrint()
     {
-        
         foreach (var img in commandPrint)
         {
             img.gameObject.SetActive(false);
