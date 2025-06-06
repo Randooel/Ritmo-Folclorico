@@ -49,5 +49,5 @@ MonoBehaviour:
   correctColor: {r: 0, g: 1, b: 0, a: 1}
   perfectColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   wrongColor: {r: 1, g: 0, b: 0, a: 1}
-  _defaultAlpha: 0.25
+  _defaultAlpha: 0
   _targetAlpha: 0.5

@@ -5630,6 +5630,16 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 2054596514}
     m_Modifications:
+    - target: {fileID: 6147123665682288967, guid: 463be7f499dc4764b948f08ea7831cf3,
+        type: 3}
+      propertyPath: _targetAlpha
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6147123665682288967, guid: 463be7f499dc4764b948f08ea7831cf3,
+        type: 3}
+      propertyPath: _defaultAlpha
+      value: 0.25
+      objectReference: {fileID: 0}
     - target: {fileID: 6722125915885830562, guid: 463be7f499dc4764b948f08ea7831cf3,
         type: 3}
       propertyPath: m_Pivot.x
@@ -5801,7 +5811,7 @@ PrefabInstance:
     - target: {fileID: 8640662020476447048, guid: 5a70b81a878358041913f95017b0a1a1,
         type: 3}
       propertyPath: m_Name
-      value: Rythm Manager
+      value: Conductor
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

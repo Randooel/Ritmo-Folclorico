@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using UnityEngine;
 
-public class WhistlerBrain : MonoBehaviour
+public class WhistlerBrain : MonoBehaviour, IDanceable
 {
     private PlayerCommands playerCommands;
     private Conductor conductor;
 
     public Animator animator;
 
+    private bool beatHappened = false;
     private enum State
     {
         Idle,
@@ -19,8 +20,10 @@ public class WhistlerBrain : MonoBehaviour
 
     [Space(20)]
     [SerializeField] private State _currentState;
+
     // private bool iamPaullo;
-    private Coroutine currentCoroutine;
+
+    [SerializeField] private Coroutine currentCoroutine;
 
     [Header("Whistle Settings")]
     [SerializeField] private float whistleWaitTime;
@@ -31,6 +34,8 @@ public class WhistlerBrain : MonoBehaviour
     [SerializeField] private List<int> currentCommandSequence;
     public List<int> CurrentCommandSequence { get => currentCommandSequence; set => currentCommandSequence = value; }
 
+    private int currentIndex;
+
     [Header("Onomatopeia Objects")]
     [SerializeField] private GameObject[] onomatopeia;
 
@@ -39,8 +44,6 @@ public class WhistlerBrain : MonoBehaviour
     [Header("Command Lists SO")]
     public CommandCombinations basicCommands;
     public CommandCombinations boitataCommands;
-
-    
 
     void Start()
     {
@@ -71,7 +74,7 @@ public class WhistlerBrain : MonoBehaviour
         {
             return;
         }
-        
+
         if (other.gameObject.CompareTag("LostNpc"))
         {
             CurrentCommandSequence = basicCommands.commandSets[1].commandSequence;
@@ -81,8 +84,6 @@ public class WhistlerBrain : MonoBehaviour
             _currentState = State.Whistle;
         }
     }
-
-
 
     // EVALUATION
     void Update()
@@ -106,7 +107,6 @@ public class WhistlerBrain : MonoBehaviour
     {
         collider.enabled = true;
 
-        StartCoroutine(WaitToWalk());
         CurrentCommandSequence = basicCommands.commandSets[0].commandSequence;
 
         _currentState = State.Whistle;
@@ -116,48 +116,57 @@ public class WhistlerBrain : MonoBehaviour
     {
         collider.enabled = false;
 
-        if (currentCoroutine == null)
-        {
-            currentCoroutine = StartCoroutine(ExecuteCurrentSequence());
-        }
+        // The rest is handled in the OnBeat method
+    }
+
+    void OnEnable()
+    {
+        RhythmEvent.onBeat += OnBeat;
+    }
+
+    void OnDisable()
+    {
+        RhythmEvent.onBeat -= OnBeat;
+    }
+
+    public void OnBeat()
+    {
+        currentCoroutine = StartCoroutine(ExecuteCurrentSequence());
     }
 
     IEnumerator ExecuteCurrentSequence()
     {
-        for (int i = 0; i < CurrentCommandSequence.Count;  i++)
+        Debug.Log(currentIndex);
+        GameObject onomatopeia1 = onomatopeia[0].gameObject;
+        GameObject onomatopeia2 = onomatopeia[1].gameObject;
+
+
+        // Emulating a 'for' to maintain the currentIndex's value through different beats
+        if (currentIndex < currentCommandSequence.Count)
         {
-            // Debug.Log(i);
-            if (CurrentCommandSequence[i] == 1)
+            var command = currentCommandSequence[currentIndex];
+            if (command == 1)
             {
-                onomatopeia[0].gameObject.SetActive(true);
-            }
-            else if (CurrentCommandSequence[i] == 2)
+                onomatopeia1.SetActive(true);
+            }else
+            if (command == 2)
             {
-                onomatopeia[1].gameObject.SetActive(true);
+                onomatopeia2.gameObject.SetActive(true);
             }
-
-            yield return new WaitForSeconds(0.4f);
-
+        }
+        else
+        {
+            currentIndex = 0;
             onomatopeia[0].gameObject.SetActive(false);
             onomatopeia[1].gameObject.SetActive(false);
-
-            yield return new WaitForSeconds(0.4f);
+            yield break;
         }
 
-        yield return new WaitForSeconds(0.4f);
+        currentIndex++;
 
-        currentCoroutine = null;
+        yield return new WaitForSeconds(0.3f);
 
-        _currentState = State.Idle;
-    }
-
-    IEnumerator WaitToWalk()
-    {
-        yield return new WaitForSeconds(2f);
-    }
-
-    IEnumerator Reset()
-    {
-        yield return new WaitForSeconds(whistleWaitTime);
+        onomatopeia[0].gameObject.SetActive(false);
+        onomatopeia[1].gameObject.SetActive(false);
     }
 }

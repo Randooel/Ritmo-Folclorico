@@ -197,7 +197,7 @@ public class PlayerRhythm : MonoBehaviour
     IEnumerator OnExecuteAction()
     {
         playerCommands.commandable = false;
-        Debug.LogError(playerCommands.mouseButtonPressed[0]);
+        // Debug.LogError(playerCommands.mouseButtonPressed[0]);
 
         // Action logic goes here
 
