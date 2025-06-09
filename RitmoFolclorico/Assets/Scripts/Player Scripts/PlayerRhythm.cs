@@ -36,6 +36,8 @@ public class PlayerRhythm : MonoBehaviour
     [Header("Parameters")]
     [SerializeField] private float moveSpeed = 5;
     [SerializeField] private float tempoAnim;
+    public bool isOnAction;
+    public int currentAction;
 
     [Header("Followers")]
     [SerializeField] private List<GameObject> followers = new List<GameObject>(); 
@@ -217,6 +219,8 @@ public class PlayerRhythm : MonoBehaviour
             }
             if(i == 3)
             {
+                isOnAction = true;
+
                 StartCoroutine(OnExecuteAction());
             }
         }
@@ -238,13 +242,33 @@ public class PlayerRhythm : MonoBehaviour
         {
             tempoAnim = conductor.SecPerBeat * 2;
         }
+    }
 
+    // Handle
+    void HandleWalk()
+    {
+        currentAction = 0;
+
+        if (tempoAnim > 0)
+        {
+            transform.position += transform.right * moveSpeed * Time.deltaTime;
+            for (int i = 0; i < followers.Count; i++)
+            {
+                followers[i].transform.position += transform.right * moveSpeed * Time.deltaTime;
+            }
+
+            tempoAnim -= Time.deltaTime;
+        }
+
+        isOnAction = false;
         playerCommands.commandable = true;
     }
 
+    // Wrong Time
     IEnumerator OnWaitToWrong()
     {
         yield return new WaitForSeconds(conductor.SecPerBeat);
+
         OnWrongTime();
     }
 
@@ -260,6 +284,8 @@ public class PlayerRhythm : MonoBehaviour
         }
     }
 
+
+    // Visual
     void DeactivateCommandPrint()
     {
         foreach (var img in commandPrint)
@@ -274,19 +300,5 @@ public class PlayerRhythm : MonoBehaviour
 
         onomatopeia[0].gameObject.SetActive(false);
         onomatopeia[1].gameObject.SetActive(false);
-    }
-
-    // Handle
-    void HandleWalk()
-    {
-        if(tempoAnim > 0)
-        {
-            transform.position += transform.right * moveSpeed * Time.deltaTime;
-            for(int i = 0; i < followers.Count; i++)
-            {
-                followers[i].transform.position += transform.right * moveSpeed * Time.deltaTime;
-            }
-            tempoAnim -= Time.deltaTime;
-        }
     }
 }

@@ -6,6 +6,7 @@ using UnityEngine;
 public class WhistlerBrain : MonoBehaviour, IDanceable
 {
     private PlayerCommands playerCommands;
+    private PlayerRhythm playerRhythm;
     private Conductor conductor;
 
     public Animator animator;
@@ -50,6 +51,7 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
     void Start()
     {
         playerCommands = FindObjectOfType<PlayerCommands>();
+        playerRhythm = FindObjectOfType<PlayerRhythm>();
         conductor = FindObjectOfType<Conductor>();
 
         animator = GetComponent<Animator>();
@@ -99,7 +101,7 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
                 HandleWhistle();
                 break;
             case State.Walk:
-                //HandleWalk();
+                HandleWalk();
                 break;
         }
     }
@@ -118,7 +120,34 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
     {
         collider.enabled = false;
 
+        if(playerRhythm.isOnAction == true)
+        {
+            HandleAction();
+        }
+
         // The rest is handled in the OnBeat method
+    }
+
+    void HandleAction()
+    {
+        if (playerRhythm.currentAction == 0)
+        {
+            _currentState = State.Walk;
+        }
+    }
+
+    void HandleWalk()
+    {
+        Debug.LogError(_currentState);
+        
+        StartCoroutine(WaitToIdle());
+    }
+
+    IEnumerator WaitToIdle()
+    {
+        yield return new WaitForSeconds(conductor.SecPerBeat * 2);
+
+        _currentState = State.Idle;
     }
 
     void OnEnable()
@@ -142,7 +171,6 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
         GameObject onomatopeia1 = onomatopeia[0].gameObject;
         GameObject onomatopeia2 = onomatopeia[1].gameObject;
 
-
         // Emulating a 'for' to maintain the currentIndex's value through different beats
         if (currentIndex < currentCommandSequence.Count)
         {
@@ -150,8 +178,8 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
             if (command == 1)
             {
                 onomatopeia1.SetActive(true);
-            }else
-            if (command == 2)
+            }
+            else if(command == 2)
             {
                 onomatopeia2.gameObject.SetActive(true);
             }
