@@ -29,14 +29,12 @@ public class RhythmManager : MonoBehaviour
 
     public void ActivateBeatEvent()
     {
-
-
         float beatPosition = _conductor.songPositionInBeats;
         int firstDecimal = Mathf.FloorToInt((beatPosition % 1) * 10);
 
         if (firstDecimal <= minDecimal || firstDecimal >= maxDecimal)
         {
-            Debug.LogError("Valid beat");
+            Debug.LogWarning("Valid beat");
             _isBeatActivated = true;
 
             RhythmEvent.onBeat?.Invoke();

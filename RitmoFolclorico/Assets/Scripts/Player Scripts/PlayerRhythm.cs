@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class PlayerRhythm : MonoBehaviour
 {
@@ -12,36 +13,44 @@ public class PlayerRhythm : MonoBehaviour
     private WhistlerBrain whistlerBrain;
     [SerializeField] Animator animator;
 
-    [Header("Button Set")]
-    public float beatWhenButtonPressed;
-    [SerializeField] private bool _wasWrongTime = false;
-    
-
-    [Header("Visual Feedbacks")]
-    [SerializeField] Image[] onomatopeia;
-    [SerializeField] Image[] commandPrint;
-    [SerializeField] Sprite[] spritesPrint;
-    [SerializeField] bool _isCommandPrintCleared;
-
     public delegate void OnHitDelegate(string hitType);
     public event OnHitDelegate OnHit;
 
+    public bool onDebug;
+
     [Header("Timing Interval for Correct Input")]
     [Header("Ex: Defines as *0*.7 / *1*.3")]
-    [Range(0,2)] public float minCorrectTime = 0.7f;
-    [Range(0,2)] public float maxCorrectTime = 1.3f;
-    
+    [Range(0, 2)] public float minCorrectTime = 0.7f;
+    [Range(0, 2)] public float maxCorrectTime = 1.3f;
+
 
     [Header("Timing Interval for Perfect Input")]
     [Header("Ex: Define MIN as *0*.X / MAX: *1*.Y")]
-    [Range(0,2)] public float minPerfectTime = 0.9f;
-    [Range(0,2)] public float maxPerfectTime = 1.1f;
+    [Range(0, 2)] public float minPerfectTime = 0.9f;
+    [Range(0, 2)] public float maxPerfectTime = 1.1f;
+
+    [Header("Button Set")]
+    public float beatWhenButtonPressed;
+    [SerializeField] private bool _wasWrongTime = false;
+
+    [Header("Parameters")]
+    [SerializeField] private float moveSpeed = 5;
+    [SerializeField] private float tempoAnim;
+
+    [Header("Followers")]
+    [SerializeField] private List<GameObject> followers = new List<GameObject>(); 
 
     [Header("Hit Booleans")]
     public bool hitWrong;
     public bool hitCorrect;
     public bool hitPerfect;
     [Range(0f,1f)] public float boolWaitTime;
+
+    [Header("Visual Feedbacks")]
+    [SerializeField] Image[] onomatopeia;
+    [SerializeField] Image[] commandPrint;
+    [SerializeField] Sprite[] spritesPrint;
+    [SerializeField] bool _isCommandPrintCleared;
 
     void Start()
     {
@@ -58,9 +67,22 @@ public class PlayerRhythm : MonoBehaviour
         onomatopeia[0].gameObject.SetActive(false);
         onomatopeia[1].gameObject.SetActive(false);
     }
+
     void Update()
     {
         BeatInput();
+        
+        // PARAMETER ADJUSTS DURING DEBUG
+        if(onDebug)
+        {
+            minCorrectTime = 0;
+            maxCorrectTime = 2;
+        }
+    }
+
+    private void FixedUpdate()
+    {
+        HandleWalk();
     }
 
     void BeatInput()
@@ -187,31 +209,42 @@ public class PlayerRhythm : MonoBehaviour
             {
                 Debug.LogWarning("OnWrongTime");
 
+                hitWrong = true;
+                OnHit?.Invoke("Wrong");
+
                 StartCoroutine(OnWaitToWrong());
+                return;
+            }
+            if(i == 3)
+            {
+                StartCoroutine(OnExecuteAction());
             }
         }
-
-        StartCoroutine(OnExecuteAction());
     }
 
     IEnumerator OnExecuteAction()
     {
+        Debug.Log("OnExecuteAction");
+
         playerCommands.commandable = false;
-        // Debug.LogError(playerCommands.mouseButtonPressed[0]);
+        Debug.LogWarning("OnExecuteAction");
 
-        // Action logic goes here
-
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(conductor.SecPerBeat);
 
         playerCommands.mouseButtonPressed.Clear();
         DeactivateCommandPrint();
+
+        if(whistlerBrain.CurrentCommandSequence == whistlerBrain.basicCommands.commandSets[0].commandSequence)
+        {
+            tempoAnim = conductor.SecPerBeat * 2;
+        }
 
         playerCommands.commandable = true;
     }
 
     IEnumerator OnWaitToWrong()
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(conductor.SecPerBeat);
         OnWrongTime();
     }
 
@@ -241,5 +274,19 @@ public class PlayerRhythm : MonoBehaviour
 
         onomatopeia[0].gameObject.SetActive(false);
         onomatopeia[1].gameObject.SetActive(false);
+    }
+
+    // Handle
+    void HandleWalk()
+    {
+        if(tempoAnim > 0)
+        {
+            transform.position += transform.right * moveSpeed * Time.deltaTime;
+            for(int i = 0; i < followers.Count; i++)
+            {
+                followers[i].transform.position += transform.right * moveSpeed * Time.deltaTime;
+            }
+            tempoAnim -= Time.deltaTime;
+        }
     }
 }

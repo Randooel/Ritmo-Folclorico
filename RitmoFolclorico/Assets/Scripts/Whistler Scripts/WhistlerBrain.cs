@@ -36,6 +36,8 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
 
     private int currentIndex;
 
+    private string[] commandN;
+
     [Header("Onomatopeia Objects")]
     [SerializeField] private GameObject[] onomatopeia;
 
