@@ -10,12 +10,15 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
 
     public Animator animator;
 
+    public delegate void OnEnemyRescuedDelegate(GameObject enemyRescued);
+    public event OnEnemyRescuedDelegate OnEnemyRescued;
 
     private enum State
     {
         Idle,
         Whistle,
-        Walk
+        Walk,
+        Combate
     }
 
     [Space(20)]
@@ -35,19 +38,16 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
     public List<int> CurrentCommandSequence { get => currentCommandSequence; set => currentCommandSequence = value; }
 
     private int currentIndex;
-
-    private string[] commandN;
+    private int currentCombatIndex;
 
     [Header("Onomatopeia Objects")]
     [SerializeField] private GameObject[] onomatopeia;
-
-    private bool collided;
 
     [Header("Command Lists SO")]
     public CommandCombinations basicCommands;
     public CommandCombinations boitataCommands;
 
-    public GameObject inimigoAfrente;
+    public GameObject currentEnemy;
 
     void Start()
     {
@@ -64,7 +64,7 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
         onomatopeia[0].gameObject.SetActive(false);
         onomatopeia[1].gameObject.SetActive(false);
 
-        collided = false;
+        currentCombatIndex = 0;
 
         if (basicCommands == null)
         {
@@ -76,21 +76,11 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
     // INPUT
     private void OnTriggerEnter2D(Collider2D other)
     {
-        
-        if (collided)
-        {
-            return;
-        }
-        
-
         if (other.gameObject.CompareTag("LostNpc"))
         {
-            Debug.Log("Colidiu");
-            CurrentCommandSequence = basicCommands.commandSets[1].commandSequence;
+            CurrentCommandSequence = basicCommands.commandSets[1 + currentCombatIndex].commandSequence;
 
-            collided = true;
-
-            inimigoAfrente = other.gameObject;
+            currentEnemy = other.gameObject;
 
             _currentState = State.Whistle;
         }
@@ -147,7 +137,7 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
                 _currentState = State.Walk;
                 break;
             case 1:
-                Atacar();
+                Recruit();
                 break;
             default:
                 break;
@@ -155,17 +145,24 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
         
     }
 
-    public void Atacar()
+    public void Recruit()
     {
-        Destroy(inimigoAfrente);
-
         CurrentCommandSequence = basicCommands.commandSets[0].commandSequence;
+        currentCombatIndex++;
+
+        if(currentCombatIndex >= 2)
+        {
+            currentCombatIndex = 0;
+            OnEnemyRescued?.Invoke(currentEnemy);
+            currentEnemy = null;
+        }
+
         ChangeToIdleState();
     }
 
     void HandleWalk()
     {
-        collided = false;
+
     }
 
     void OnEnable()

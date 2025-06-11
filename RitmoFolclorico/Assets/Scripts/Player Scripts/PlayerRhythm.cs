@@ -91,6 +91,10 @@ public class PlayerRhythm : MonoBehaviour
     {
         HandleWalk();
     }
+    private void OnEnable()
+    {
+        //WhistlerBrain.On
+    }
 
     void BeatInput()
     {
@@ -256,6 +260,11 @@ public class PlayerRhythm : MonoBehaviour
         }
 
         OnActionComplete?.Invoke(actionToCall);
+    }
+
+    public void AddFollower(GameObject newFollower)
+    {
+        followers.Add(newFollower);
     }
 
     // Handle
