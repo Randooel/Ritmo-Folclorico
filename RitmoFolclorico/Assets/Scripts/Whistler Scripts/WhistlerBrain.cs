@@ -6,12 +6,11 @@ using UnityEngine;
 public class WhistlerBrain : MonoBehaviour, IDanceable
 {
     private PlayerCommands playerCommands;
-    private PlayerRhythm playerRhythm;
     private Conductor conductor;
 
     public Animator animator;
 
-    private bool beatHappened = false;
+
     private enum State
     {
         Idle,
@@ -48,16 +47,19 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
     public CommandCombinations basicCommands;
     public CommandCombinations boitataCommands;
 
+    public GameObject inimigoAfrente;
+
     void Start()
     {
         playerCommands = FindObjectOfType<PlayerCommands>();
-        playerRhythm = FindObjectOfType<PlayerRhythm>();
         conductor = FindObjectOfType<Conductor>();
 
         animator = GetComponent<Animator>();
         collider = GetComponent<Collider2D>();
 
         _currentState = State.Idle;
+
+        CurrentCommandSequence = basicCommands.commandSets[0].commandSequence;
 
         onomatopeia[0].gameObject.SetActive(false);
         onomatopeia[1].gameObject.SetActive(false);
@@ -74,16 +76,21 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
     // INPUT
     private void OnTriggerEnter2D(Collider2D other)
     {
+        
         if (collided)
         {
             return;
         }
+        
 
         if (other.gameObject.CompareTag("LostNpc"))
         {
+            Debug.Log("Colidiu");
             CurrentCommandSequence = basicCommands.commandSets[1].commandSequence;
 
             collided = true;
+
+            inimigoAfrente = other.gameObject;
 
             _currentState = State.Whistle;
         }
@@ -106,58 +113,71 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
         }
     }
 
+    public void ChangeToIdleState()
+    {
+        _currentState = State.Idle;
+        StartCoroutine(SetToWhistle());
+    }
+
+    IEnumerator SetToWhistle()
+    {
+        yield return new WaitForSeconds(0.5f);
+        _currentState = State.Whistle;
+    }
+
     // OUTPUT
     void HandleIdle()
     {
         collider.enabled = true;
-
-        CurrentCommandSequence = basicCommands.commandSets[0].commandSequence;
-
-        _currentState = State.Whistle;
     }
 
     void HandleWhistle()
     {
         collider.enabled = false;
-
-        if(playerRhythm.isOnAction == true)
-        {
-            HandleAction();
-        }
-
         // The rest is handled in the OnBeat method
     }
 
-    void HandleAction()
+    void HandleAction(int actionID)
     {
-        if (playerRhythm.currentAction == 0)
+        switch (actionID)
         {
-            _currentState = State.Walk;
+            case -1:
+                break;
+            case 0:
+                _currentState = State.Walk;
+                break;
+            case 1:
+                Atacar();
+                break;
+            default:
+                break;
         }
+        
+    }
+
+    public void Atacar()
+    {
+        Destroy(inimigoAfrente);
+
+        CurrentCommandSequence = basicCommands.commandSets[0].commandSequence;
+        ChangeToIdleState();
     }
 
     void HandleWalk()
     {
-        Debug.LogError(_currentState);
-        
-        StartCoroutine(WaitToIdle());
-    }
-
-    IEnumerator WaitToIdle()
-    {
-        yield return new WaitForSeconds(conductor.SecPerBeat * 2);
-
-        _currentState = State.Idle;
+        collided = false;
     }
 
     void OnEnable()
     {
         RhythmEvent.onBeat += OnBeat;
+        PlayerRhythm.OnActionComplete += HandleAction;
     }
 
     void OnDisable()
     {
         RhythmEvent.onBeat -= OnBeat;
+        PlayerRhythm.OnActionComplete -= HandleAction;
     }
 
     public void OnBeat()

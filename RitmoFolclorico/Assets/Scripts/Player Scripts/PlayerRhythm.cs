@@ -12,9 +12,12 @@ public class PlayerRhythm : MonoBehaviour
     private PlayerCommands playerCommands;
     private WhistlerBrain whistlerBrain;
     [SerializeField] Animator animator;
+    
+    public delegate void OnMouseClickDelegate(string hitType);
+    public event OnMouseClickDelegate OnMouseClick;
 
-    public delegate void OnHitDelegate(string hitType);
-    public event OnHitDelegate OnHit;
+    public delegate void OnActionCompleteDelegate(int hitID);
+    public static event OnActionCompleteDelegate OnActionComplete;
 
     public bool onDebug;
 
@@ -36,7 +39,6 @@ public class PlayerRhythm : MonoBehaviour
     [Header("Parameters")]
     [SerializeField] private float moveSpeed = 5;
     [SerializeField] private float tempoAnim;
-    public bool isOnAction;
     public int currentAction;
 
     [Header("Followers")]
@@ -53,6 +55,9 @@ public class PlayerRhythm : MonoBehaviour
     [SerializeField] Image[] commandPrint;
     [SerializeField] Sprite[] spritesPrint;
     [SerializeField] bool _isCommandPrintCleared;
+
+
+
 
     void Start()
     {
@@ -129,20 +134,20 @@ public class PlayerRhythm : MonoBehaviour
                     if (beatWhenButtonPressed >= beatTime + minPerfectTime && beatWhenButtonPressed < beatTime + maxPerfectTime)
                     {
                         hitPerfect = true;
-                        OnHit?.Invoke("Perfect");
+                        OnMouseClick?.Invoke("Perfect");
                         Debug.Log("PERFECT!");
                     }
                     else
                     {
                         hitCorrect = true;
-                        OnHit?.Invoke("Correct");
+                        OnMouseClick?.Invoke("Correct");
                         Debug.Log("Correct!");
                     }
                 }
                 else
                 {
                     hitWrong = true;
-                    OnHit?.Invoke("Wrong");
+                    OnMouseClick?.Invoke("Wrong");
 
                     // Clear the current command list if the player gets the rhythm wrong
                     OnWrongTime();
@@ -207,20 +212,19 @@ public class PlayerRhythm : MonoBehaviour
         // Checks if the inserted command sequence matches the whistler's command sequence
         for (int i = 0; i < 4; i++)
         {
+            Debug.Log(whistlerBrain.CurrentCommandSequence[0]);
             if (playerCommands.mouseButtonPressed[i] != whistlerBrain.CurrentCommandSequence[i])
             {
                 Debug.LogWarning("OnWrongTime");
 
                 hitWrong = true;
-                OnHit?.Invoke("Wrong");
+                OnMouseClick?.Invoke("Wrong");
 
                 StartCoroutine(OnWaitToWrong());
                 return;
             }
             if(i == 3)
             {
-                isOnAction = true;
-
                 StartCoroutine(OnExecuteAction());
             }
         }
@@ -238,17 +242,25 @@ public class PlayerRhythm : MonoBehaviour
         playerCommands.mouseButtonPressed.Clear();
         DeactivateCommandPrint();
 
+        int actionToCall = -1;
+
         if(whistlerBrain.CurrentCommandSequence == whistlerBrain.basicCommands.commandSets[0].commandSequence)
         {
             tempoAnim = conductor.SecPerBeat * 2;
+            actionToCall = 0;
         }
+
+        if (whistlerBrain.CurrentCommandSequence == whistlerBrain.basicCommands.commandSets[1].commandSequence)
+        {
+            actionToCall = 1;
+        }
+
+        OnActionComplete?.Invoke(actionToCall);
     }
 
     // Handle
     void HandleWalk()
     {
-        currentAction = 0;
-
         if (tempoAnim > 0)
         {
             transform.position += transform.right * moveSpeed * Time.deltaTime;
@@ -259,8 +271,6 @@ public class PlayerRhythm : MonoBehaviour
 
             tempoAnim -= Time.deltaTime;
         }
-
-        isOnAction = false;
         playerCommands.commandable = true;
     }
 

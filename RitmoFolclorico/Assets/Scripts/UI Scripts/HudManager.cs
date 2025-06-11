@@ -29,7 +29,7 @@ public class HudManager : MonoBehaviour
         _conductor = FindObjectOfType<Conductor>();
         _playerRhythm = FindObjectOfType<PlayerRhythm>();
 
-        _playerRhythm.OnHit += ChangeColorOnHit;
+        _playerRhythm.OnMouseClick += ChangeColorOnHit;
 
         _baseColor = defaultColor;
         _rhythmRing.color = _baseColor;
