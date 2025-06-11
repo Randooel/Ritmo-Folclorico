@@ -4,15 +4,26 @@ using UnityEngine;
 
 public class SyncedAnimation : MonoBehaviour
 {
-    // Start is called before the first frame update
+    public Animator animator;
+
+    public AnimatorStateInfo animatorStateInfo;
+
+    public int currentState;
+
     void Start()
     {
-        
+        animator = GetComponent<Animator>();
+
+        animatorStateInfo = animator.GetCurrentAnimatorStateInfo(0);
+
+        currentState = animatorStateInfo.fullPathHash;
     }
 
-    // Update is called once per frame
     void Update()
     {
-        
+        animator.Play(currentState, -1, (Conductor.instance.loopPositionInAnalog));
+
+        animator.speed = 0;
+
     }
 }

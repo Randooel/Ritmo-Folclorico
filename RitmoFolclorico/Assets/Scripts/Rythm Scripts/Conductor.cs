@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.Rendering.DebugUI.Table;
 
 public class Conductor : MonoBehaviour
 {
@@ -23,6 +24,26 @@ public class Conductor : MonoBehaviour
 
     [Header("Audio Source Reference")]
     public AudioSource musicSource;
+
+    //the number of beats in each loop
+    public float beatsPerLoop;
+
+    //the total number of loops completed since the looping clip first started
+    public int completedLoops = 0;
+
+    //The current position of the song within the loop in beats.
+    public float loopPositionInBeats;
+
+    //The current relative position of the song within the loop measured between 0 and 1.
+    public float loopPositionInAnalog;
+
+    //Conductor instance
+    public static Conductor instance;
+
+void Awake()
+    {
+        instance = this;
+    }
 
     public float SecPerBeat 
     {
@@ -57,5 +78,12 @@ public class Conductor : MonoBehaviour
 
         // Determine how many beats passed since song started playing
         songPositionInBeats = songPosition / SecPerBeat;
+
+        //calculate the loop position
+        if (songPositionInBeats >= (completedLoops + 1) * beatsPerLoop)
+            completedLoops++;
+        loopPositionInBeats = songPositionInBeats - completedLoops * beatsPerLoop;
+
+        loopPositionInAnalog = loopPositionInBeats / beatsPerLoop;
     }
 }
