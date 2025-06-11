@@ -48,6 +48,7 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
     public CommandCombinations boitataCommands;
 
     public GameObject currentEnemy;
+    public BossCharacter currentBoss;
 
     void Start()
     {
@@ -84,6 +85,16 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
 
             _currentState = State.Whistle;
         }
+
+        if(other.TryGetComponent(out BossCharacter boss))
+        {
+            currentBoss = boss;
+            if(currentBoss.bossName == "Boitata")
+            {
+                CurrentCommandSequence = boitataCommands.commandSets[2 + currentCombatIndex].commandSequence;
+                _currentState = State.Whistle;
+            }
+        }
     }
 
     // EVALUATION
@@ -111,8 +122,13 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
 
     IEnumerator SetToWhistle()
     {
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(conductor.SecPerBeat*1);
         _currentState = State.Whistle;
+    }
+    IEnumerator SetToIdle()
+    {
+        yield return new WaitForSeconds(conductor.SecPerBeat*2);
+        ChangeToIdleState();
     }
 
     // OUTPUT
@@ -135,9 +151,13 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
                 break;
             case 0:
                 _currentState = State.Walk;
+                StartCoroutine(SetToIdle());
                 break;
             case 1:
                 Recruit();
+                break;
+            case 2:
+                BossDance();
                 break;
             default:
                 break;
@@ -154,6 +174,21 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
         {
             currentCombatIndex = 0;
             OnEnemyRescued?.Invoke(currentEnemy);
+            currentEnemy = null;
+        }
+
+        ChangeToIdleState();
+    }
+
+    public void BossDance()
+    {
+        CurrentCommandSequence = basicCommands.commandSets[0].commandSequence;
+        currentCombatIndex++;
+
+        if (currentCombatIndex >= 3)
+        {
+            currentCombatIndex = 0;
+            OnEnemyRescued?.Invoke(currentBoss.gameObject);
             currentEnemy = null;
         }
 
@@ -179,12 +214,11 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
 
     public void OnBeat()
     {
-        currentCoroutine = StartCoroutine(ExecuteCurrentSequence());
+        currentCoroutine = StartCoroutine(OnomatopeiaHandler());
     }
 
-    IEnumerator ExecuteCurrentSequence()
+    IEnumerator OnomatopeiaHandler()
     {
-        Debug.Log(currentIndex);
         GameObject onomatopeia1 = onomatopeia[0].gameObject;
         GameObject onomatopeia2 = onomatopeia[1].gameObject;
 
@@ -198,14 +232,14 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
             }
             else if(command == 2)
             {
-                onomatopeia2.gameObject.SetActive(true);
+                onomatopeia2.SetActive(true);
             }
         }
         else
         {
             currentIndex = 0;
-            onomatopeia[0].gameObject.SetActive(false);
-            onomatopeia[1].gameObject.SetActive(false);
+            onomatopeia[0].SetActive(false);
+            onomatopeia[1].SetActive(false);
             yield break;
         }
 
@@ -213,7 +247,7 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
 
         yield return new WaitForSeconds(0.3f);
 
-        onomatopeia[0].gameObject.SetActive(false);
-        onomatopeia[1].gameObject.SetActive(false);
+        onomatopeia[0].SetActive(false);
+        onomatopeia[1].SetActive(false);
     }
 }

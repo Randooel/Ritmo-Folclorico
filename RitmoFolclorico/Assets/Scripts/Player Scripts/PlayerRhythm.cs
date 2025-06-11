@@ -268,6 +268,13 @@ public class PlayerRhythm : MonoBehaviour
             actionToCall = 1;
         }
 
+        if (whistlerBrain.CurrentCommandSequence == whistlerBrain.boitataCommands.commandSets[2].commandSequence ||
+            whistlerBrain.CurrentCommandSequence == whistlerBrain.boitataCommands.commandSets[3].commandSequence ||
+            whistlerBrain.CurrentCommandSequence == whistlerBrain.boitataCommands.commandSets[4].commandSequence)
+        {
+            actionToCall = 2;
+        }
+
         OnActionComplete?.Invoke(actionToCall);
     }
 

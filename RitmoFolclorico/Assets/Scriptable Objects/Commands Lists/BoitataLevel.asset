@@ -22,4 +22,4 @@ MonoBehaviour:
   - commandName: Boitata2
     commandSequence: 01000000020000000100000002000000
   - commandName: Boitata3
-    commandSequence: 00000000010000000000000001000000
+    commandSequence: 02000000010000000200000001000000
