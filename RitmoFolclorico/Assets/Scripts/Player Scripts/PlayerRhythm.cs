@@ -179,6 +179,8 @@ public class PlayerRhythm : MonoBehaviour
 
             playerCommands.mouseButtonPressed.Add(1);
 
+            animator.SetTrigger("isOno1");
+
             if (index < commandPrint.Length)
             {
                 commandPrint[index].sprite = spritesPrint[0];
@@ -194,6 +196,8 @@ public class PlayerRhythm : MonoBehaviour
             int index = playerCommands.mouseButtonPressed.Count;
 
             playerCommands.mouseButtonPressed.Add(2);
+
+            animator.SetTrigger("isOno2");
 
             if (index < commandPrint.Length)
             {
@@ -263,7 +267,10 @@ public class PlayerRhythm : MonoBehaviour
     {
         if (tempoAnim > 0)
         {
+            animator.SetTrigger("isWalking");
+
             transform.position += transform.right * moveSpeed * Time.deltaTime;
+
             for (int i = 0; i < followers.Count; i++)
             {
                 followers[i].transform.position += transform.right * moveSpeed * Time.deltaTime;
