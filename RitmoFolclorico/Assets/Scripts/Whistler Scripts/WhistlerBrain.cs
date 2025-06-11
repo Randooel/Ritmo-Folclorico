@@ -11,7 +11,7 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
     public Animator animator;
 
     public delegate void OnEnemyRescuedDelegate(GameObject enemyRescued);
-    public event OnEnemyRescuedDelegate OnEnemyRescued;
+    public static event OnEnemyRescuedDelegate OnEnemyRescued;
 
     private enum State
     {

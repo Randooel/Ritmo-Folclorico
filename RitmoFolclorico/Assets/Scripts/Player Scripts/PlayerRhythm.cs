@@ -93,7 +93,12 @@ public class PlayerRhythm : MonoBehaviour
     }
     private void OnEnable()
     {
-        //WhistlerBrain.On
+        WhistlerBrain.OnEnemyRescued += AddFollower;
+    }
+
+    private void OnDisable()
+    {
+        WhistlerBrain.OnEnemyRescued -= AddFollower;
     }
 
     void BeatInput()
@@ -220,7 +225,6 @@ public class PlayerRhythm : MonoBehaviour
         // Checks if the inserted command sequence matches the whistler's command sequence
         for (int i = 0; i < 4; i++)
         {
-            Debug.Log(whistlerBrain.CurrentCommandSequence[0]);
             if (playerCommands.mouseButtonPressed[i] != whistlerBrain.CurrentCommandSequence[i])
             {
                 Debug.LogWarning("OnWrongTime");
@@ -258,7 +262,8 @@ public class PlayerRhythm : MonoBehaviour
             actionToCall = 0;
         }
 
-        if (whistlerBrain.CurrentCommandSequence == whistlerBrain.basicCommands.commandSets[1].commandSequence)
+        if (whistlerBrain.CurrentCommandSequence == whistlerBrain.basicCommands.commandSets[1].commandSequence ||
+            whistlerBrain.CurrentCommandSequence == whistlerBrain.basicCommands.commandSets[2].commandSequence)
         {
             actionToCall = 1;
         }
@@ -268,6 +273,10 @@ public class PlayerRhythm : MonoBehaviour
 
     public void AddFollower(GameObject newFollower)
     {
+        newFollower.GetComponent<BoxCollider2D>().enabled = false;
+        newFollower.transform.position -= transform.right * 10;
+
+
         followers.Add(newFollower);
     }
 
