@@ -259,6 +259,7 @@ public class PlayerRhythm : MonoBehaviour
         if(whistlerBrain.CurrentCommandSequence == whistlerBrain.basicCommands.commandSets[0].commandSequence)
         {
             tempoAnim = conductor.SecPerBeat * 2;
+            animator.SetTrigger("isWalking");
             actionToCall = 0;
         }
 
@@ -292,8 +293,6 @@ public class PlayerRhythm : MonoBehaviour
     {
         if (tempoAnim > 0)
         {
-            animator.SetTrigger("isWalking");
-
             transform.position += transform.right * moveSpeed * Time.deltaTime;
 
             for (int i = 0; i < followers.Count; i++)

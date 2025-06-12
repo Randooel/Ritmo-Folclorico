@@ -112,6 +112,11 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
                 HandleWalk();
                 break;
         }
+
+        if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1))
+        {
+            _currentState = State.Idle;
+        }
     }
 
     public void ChangeToIdleState()
@@ -122,7 +127,7 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
 
     IEnumerator SetToWhistle()
     {
-        yield return new WaitForSeconds(conductor.SecPerBeat*1);
+        yield return new WaitForSeconds(conductor.SecPerBeat*2);
         _currentState = State.Whistle;
     }
     IEnumerator SetToIdle()
@@ -197,7 +202,7 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
 
     void HandleWalk()
     {
-
+        animator.SetTrigger("isWalking");
     }
 
     void OnEnable()
@@ -229,10 +234,12 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
             if (command == 1)
             {
                 onomatopeia1.SetActive(true);
+                animator.SetTrigger("isWhistlingOno1");
             }
             else if(command == 2)
             {
                 onomatopeia2.SetActive(true);
+                animator.SetTrigger("isWhistlingOno2");
             }
         }
         else
@@ -245,7 +252,7 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
 
         currentIndex++;
 
-        yield return new WaitForSeconds(0.3f);
+        yield return new WaitForSeconds(conductor.SecPerBeat / 2);
 
         onomatopeia[0].SetActive(false);
         onomatopeia[1].SetActive(false);
