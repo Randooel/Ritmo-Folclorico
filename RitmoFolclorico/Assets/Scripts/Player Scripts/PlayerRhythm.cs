@@ -58,7 +58,6 @@ public class PlayerRhythm : MonoBehaviour
 
 
 
-
     void Start()
     {
         conductor = FindObjectOfType<Conductor>();
@@ -244,12 +243,9 @@ public class PlayerRhythm : MonoBehaviour
 
     IEnumerator OnExecuteAction()
     {
-        Debug.Log("OnExecuteAction");
+        yield return new WaitForSeconds(conductor.SecPerBeat);
 
         playerCommands.commandable = false;
-        Debug.LogWarning("OnExecuteAction");
-
-        yield return new WaitForSeconds(conductor.SecPerBeat);
 
         playerCommands.mouseButtonPressed.Clear();
         DeactivateCommandPrint();
@@ -302,7 +298,10 @@ public class PlayerRhythm : MonoBehaviour
 
             tempoAnim -= Time.deltaTime;
         }
-        playerCommands.commandable = true;
+        else
+        {
+            playerCommands.commandable = true;
+        }
     }
 
     // Wrong Time

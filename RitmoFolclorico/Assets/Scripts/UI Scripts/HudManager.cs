@@ -8,6 +8,7 @@ public class HudManager : MonoBehaviour
 {
     private Conductor _conductor;
     private PlayerRhythm _playerRhythm;
+    private PlayerCommands _playerCommands;
 
     private Coroutine _resetColorCoroutine;
 
@@ -28,6 +29,7 @@ public class HudManager : MonoBehaviour
     {
         _conductor = FindObjectOfType<Conductor>();
         _playerRhythm = FindObjectOfType<PlayerRhythm>();
+        _playerCommands = FindObjectOfType<PlayerCommands>();
 
         _playerRhythm.OnMouseClick += ChangeColorOnHit;
 

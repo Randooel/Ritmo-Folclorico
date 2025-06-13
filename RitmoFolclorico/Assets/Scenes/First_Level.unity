@@ -4062,7 +4062,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.016104164, y: 0.022000002}
   m_AnchorMax: {x: 0.08381252, y: 0.061000004}
-  m_AnchoredPosition: {x: -819.07574, y: -449.72437}
+  m_AnchoredPosition: {x: -819.07574, y: -449.7219}
   m_SizeDelta: {x: 123.229225, y: 38.219997}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1279559950
@@ -5639,6 +5639,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7709297634840322660, guid: 9f5c61ef1c17953418c712fdd8bbc82f,
+        type: 3}
+      propertyPath: Loop
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8672789638457119892, guid: 9f5c61ef1c17953418c712fdd8bbc82f,
         type: 3}
       propertyPath: music.Array.size
@@ -5648,7 +5653,7 @@ PrefabInstance:
         type: 3}
       propertyPath: music.Array.data[0]
       value: 
-      objectReference: {fileID: 8300000, guid: 5af808057aad0b048bd09a3ce00239ad, type: 3}
+      objectReference: {fileID: 8300000, guid: 30ed2f4a49e597f419d10fa4666dcd77, type: 3}
     - target: {fileID: 8672789638457119892, guid: 9f5c61ef1c17953418c712fdd8bbc82f,
         type: 3}
       propertyPath: music.Array.data[1]

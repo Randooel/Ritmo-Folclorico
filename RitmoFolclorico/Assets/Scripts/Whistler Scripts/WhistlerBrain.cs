@@ -6,6 +6,7 @@ using UnityEngine;
 public class WhistlerBrain : MonoBehaviour, IDanceable
 {
     private PlayerCommands playerCommands;
+    private PlayerRhythm playerRhythm;
     private Conductor conductor;
 
     public Animator animator;
@@ -30,6 +31,7 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
 
     [Header("Whistle Settings")]
     [SerializeField] private float whistleWaitTime;
+    private float changeStateCooldown;
     // [SerializeField] private float comandName;
 
     private Collider2D collider;
@@ -53,6 +55,7 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
     void Start()
     {
         playerCommands = FindObjectOfType<PlayerCommands>();
+        playerRhythm = GetComponent<PlayerRhythm>();
         conductor = FindObjectOfType<Conductor>();
 
         animator = GetComponent<Animator>();
@@ -71,6 +74,26 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
         {
             Debug.LogError("Basic Command SO wasn't serialized properly.");
             return;
+        }
+    }
+
+    void OnEnable()
+    {
+        RhythmEvent.onBeat += OnBeat;
+        PlayerRhythm.OnActionComplete += HandleAction;
+    }
+
+    void OnDisable()
+    {
+        RhythmEvent.onBeat -= OnBeat;
+        PlayerRhythm.OnActionComplete -= HandleAction;
+    }
+
+    public void OnBeat()
+    {
+        if (_currentState == State.Whistle)
+        {
+            currentCoroutine = StartCoroutine(OnomatopeiaHandler());
         }
     }
 
@@ -100,6 +123,16 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
     // EVALUATION
     void Update()
     {
+        if(_currentState == State.Whistle /*|| _currentState == State.Idle*/)
+        {
+            if(Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1))
+            {
+                ChangeToIdleState();
+
+                Debug.Log(_currentState);
+            }
+        }
+
         switch (_currentState)
         {
             case State.Idle:
@@ -112,40 +145,6 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
                 HandleWalk();
                 break;
         }
-
-        if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1))
-        {
-            _currentState = State.Idle;
-        }
-    }
-
-    public void ChangeToIdleState()
-    {
-        _currentState = State.Idle;
-        StartCoroutine(SetToWhistle());
-    }
-
-    IEnumerator SetToWhistle()
-    {
-        yield return new WaitForSeconds(conductor.SecPerBeat*2);
-        _currentState = State.Whistle;
-    }
-    IEnumerator SetToIdle()
-    {
-        yield return new WaitForSeconds(conductor.SecPerBeat*2);
-        ChangeToIdleState();
-    }
-
-    // OUTPUT
-    void HandleIdle()
-    {
-        collider.enabled = true;
-    }
-
-    void HandleWhistle()
-    {
-        collider.enabled = false;
-        // The rest is handled in the OnBeat method
     }
 
     void HandleAction(int actionID)
@@ -155,8 +154,7 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
             case -1:
                 break;
             case 0:
-                _currentState = State.Walk;
-                StartCoroutine(SetToIdle());
+                ChangeToWalkState();
                 break;
             case 1:
                 Recruit();
@@ -167,7 +165,32 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
             default:
                 break;
         }
-        
+    }
+
+    // OUTPUT
+    void HandleIdle()
+    {
+        collider.enabled = true;
+
+        changeStateCooldown -= Time.deltaTime;
+
+        if(changeStateCooldown < 0)
+        {
+            _currentState = State.Whistle;
+        }
+    }
+
+    void HandleWhistle()
+    {
+        collider.enabled = false;
+        // The rest is handled in the OnBeat method
+    }
+
+    void HandleWalk()
+    {
+        animator.SetTrigger("isWalking");
+
+        StartCoroutine(SetToIdle());
     }
 
     public void Recruit()
@@ -175,7 +198,7 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
         CurrentCommandSequence = basicCommands.commandSets[0].commandSequence;
         currentCombatIndex++;
 
-        if(currentCombatIndex >= 2)
+        if (currentCombatIndex >= 2)
         {
             currentCombatIndex = 0;
             OnEnemyRescued?.Invoke(currentEnemy);
@@ -197,30 +220,42 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
             currentEnemy = null;
         }
 
-        ChangeToIdleState();
+        SetToIdle();
     }
 
-    void HandleWalk()
+
+
+    // COROUTINE RELATED
+    public void ChangeToIdleState()
     {
-        animator.SetTrigger("isWalking");
+        StopCoroutine(OnomatopeiaHandler());
+        _currentState = State.Idle;
+
+        changeStateCooldown = conductor.SecPerBeat * 2;
     }
 
-    void OnEnable()
+    public void ChangeToWalkState()
     {
-        RhythmEvent.onBeat += OnBeat;
-        PlayerRhythm.OnActionComplete += HandleAction;
+        StopCoroutine(OnomatopeiaHandler());
+        _currentState = State.Walk;
+
+        changeStateCooldown = conductor.SecPerBeat * 2;
     }
 
-    void OnDisable()
+    /*
+    IEnumerator SetToWhistle()
     {
-        RhythmEvent.onBeat -= OnBeat;
-        PlayerRhythm.OnActionComplete -= HandleAction;
+        yield return new WaitForSeconds(conductor.SecPerBeat*3);
+        _currentState = State.Whistle;
     }
+    */
 
-    public void OnBeat()
+    IEnumerator SetToIdle()
     {
-        currentCoroutine = StartCoroutine(OnomatopeiaHandler());
+        yield return new WaitForSeconds(conductor.SecPerBeat*1);
+        _currentState = State.Idle;
     }
+    
 
     IEnumerator OnomatopeiaHandler()
     {
@@ -247,6 +282,9 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
             currentIndex = 0;
             onomatopeia[0].SetActive(false);
             onomatopeia[1].SetActive(false);
+
+            ChangeToIdleState();
+
             yield break;
         }
 
