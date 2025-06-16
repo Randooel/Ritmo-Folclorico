@@ -123,7 +123,7 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
     // EVALUATION
     void Update()
     {
-        if(_currentState == State.Whistle /*|| _currentState == State.Idle*/)
+        if(_currentState == State.Whistle || _currentState == State.Idle)
         {
             if(Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1))
             {

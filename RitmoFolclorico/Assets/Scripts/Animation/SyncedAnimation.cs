@@ -1,29 +1,75 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
+using DG.Tweening;
 
-public class SyncedAnimation : MonoBehaviour
+public class SyncedAnimation : MonoBehaviour, IDanceable
 {
-    public Animator animator;
+    Conductor conductor;
+    Animator animator;
+    [SerializeField] bool isOnBeat;
+    [SerializeField] float defaultAnimatorSpeed;
 
-    public AnimatorStateInfo animatorStateInfo;
+    void OnEnable()
+    {
+        RhythmEvent.onBeat += OnBeat;
+    }
 
-    public int currentState;
+    void OnDisable()
+    {
+        RhythmEvent.onBeat -= OnBeat;
+    }
 
     void Start()
     {
+        conductor = FindObjectOfType<Conductor>(); 
         animator = GetComponent<Animator>();
 
-        animatorStateInfo = animator.GetCurrentAnimatorStateInfo(0);
-
-        currentState = animatorStateInfo.fullPathHash;
+        defaultAnimatorSpeed = animator.speed;
     }
 
-    void Update()
+    public void OnBeat()
     {
-        animator.Play(currentState, -1, (Conductor.instance.loopPositionInAnalog));
+        // Fullfil the WaitUntilNextBeat's requisites to unpause the animation
+        isOnBeat = true;
 
+        UnpauseAnimation();
+
+        // Resets the bool so the script will be ready to handle the next animation transition
+        DOVirtual.DelayedCall(conductor.SecPerBeat / 2, () =>
+        {
+            isOnBeat = false;
+        });
+    }
+
+    public void OnAnimationStarted()
+    {
+        if (!isOnBeat)
+        {
+            Debug.LogError("IS OFF BEAT");
+            // Updates the animator speed every time a new animation starts off beat
+            defaultAnimatorSpeed = animator.speed;
+
+            // Pauses animation
+            PauseAnimation();
+
+            StartCoroutine(WaitUntilNextBeat());
+        }
+    }
+
+    void UnpauseAnimation()
+    {
+        animator.speed = defaultAnimatorSpeed;
+    }
+
+    void PauseAnimation()
+    {
         animator.speed = 0;
+    }
 
+    IEnumerator WaitUntilNextBeat()
+    {
+        yield return new WaitUntil(() => isOnBeat);
     }
 }

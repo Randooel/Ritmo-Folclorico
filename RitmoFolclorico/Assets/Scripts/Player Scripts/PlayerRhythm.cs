@@ -189,6 +189,12 @@ public class PlayerRhythm : MonoBehaviour
 
             animator.SetTrigger("isOno1");
 
+            for (int i = 0; i < followers.Count; i++)
+            {
+                Animator anim = followers[i].GetComponent<Animator>();
+                anim.SetTrigger("isDancingOno1");
+            }
+
             if (index < commandPrint.Length)
             {
                 commandPrint[index].sprite = spritesPrint[0];
@@ -206,6 +212,12 @@ public class PlayerRhythm : MonoBehaviour
             playerCommands.mouseButtonPressed.Add(2);
 
             animator.SetTrigger("isOno2");
+
+            for(int i = 0; i < followers.Count; i++)
+            {
+                Animator anim = followers[i].GetComponent<Animator>();
+                anim.SetTrigger("isDancingOno2");
+            }
 
             if (index < commandPrint.Length)
             {
@@ -257,6 +269,12 @@ public class PlayerRhythm : MonoBehaviour
             tempoAnim = conductor.SecPerBeat * 2;
             animator.SetTrigger("isWalking");
             actionToCall = 0;
+
+            for(int i = 0; i < followers.Count; i++)
+            {
+                Animator anim = followers[i].GetComponent<Animator>();
+                anim.SetTrigger("isWalking");
+            }
         }
 
         if (whistlerBrain.CurrentCommandSequence == whistlerBrain.basicCommands.commandSets[1].commandSequence ||

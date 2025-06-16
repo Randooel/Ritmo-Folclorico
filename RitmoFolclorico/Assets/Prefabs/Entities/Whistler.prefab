@@ -296,6 +296,7 @@ GameObject:
   - component: {fileID: 6907884571030454281}
   - component: {fileID: 3024128890887485828}
   - component: {fileID: 1933431862738098450}
+  - component: {fileID: 757074435501527071}
   m_Layer: 0
   m_Name: Whistler
   m_TagString: Whistler
@@ -316,9 +317,9 @@ Transform:
   m_LocalScale: {x: 0.67, y: 0.67, z: 0.67}
   m_ConstrainProportionsScale: 1
   m_Children:
+  - {fileID: 5512662934003797168}
   - {fileID: 6406058564558106337}
   - {fileID: 4944535511176892301}
-  - {fileID: 5512662934003797168}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &6907884571030454281
@@ -343,6 +344,7 @@ MonoBehaviour:
   basicCommands: {fileID: 11400000, guid: 2fe575659e3b9c94eba16cf004fdca14, type: 2}
   boitataCommands: {fileID: 11400000, guid: e080ab7f1a16e8441b0de4d4dcd51a72, type: 2}
   currentEnemy: {fileID: 0}
+  currentBoss: {fileID: 0}
 --- !u!61 &3024128890887485828
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -415,3 +417,24 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 2
+--- !u!95 &757074435501527071
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9188577593249287412}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: bc5a8872712c3144b8abbe2ab3b01a5d, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
