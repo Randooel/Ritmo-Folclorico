@@ -52,6 +52,11 @@ public class SyncedAnimation : MonoBehaviour, IDanceable
             if(!isOnBeat)
             {
                 isOnBeat = true;
+
+                DOVirtual.DelayedCall(conductor.SecPerBeat / 2, () =>
+                {
+                    isOnBeat = false;
+                });
             }
         }
     }
@@ -83,6 +88,14 @@ public class SyncedAnimation : MonoBehaviour, IDanceable
         animator.Play(npcStateName0, 0, animationFrame);
     }
 
+    void PlayWalk()
+    {
+        npcTime1 = npcRef1.normalizedTime;
+
+        float animationFrame = npcTime1;
+        animator.Play(npcStateName1, 0, animationFrame);
+    }
+
     IEnumerator WaitUntilNextBeat()
     {
         PauseAnimation();
@@ -108,7 +121,7 @@ public class SyncedAnimation : MonoBehaviour, IDanceable
         float firstDecimal = Mathf.Floor((beatsPosition % 1f) * 10);
 
 
-        if (firstDecimal >= 1 || firstDecimal <= 8)
+        if (firstDecimal >= rhythmManager.MinDecimal || firstDecimal <= rhythmManager.MaxDecimal)
         {
             isOnBeat = true;
         }

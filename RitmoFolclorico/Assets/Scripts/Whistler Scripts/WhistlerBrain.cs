@@ -228,8 +228,6 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
         SetToIdle();
     }
 
-
-
     // COROUTINE RELATED
     public void ChangeToIdleState()
     {
