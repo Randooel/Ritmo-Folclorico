@@ -11,6 +11,8 @@ public class RhythmManager : MonoBehaviour
 
     [SerializeField] bool _isBeatActivated;
 
+    public int MinDecimal { get => minDecimal; set => minDecimal = value; }
+    public int MaxDecimal { get => maxDecimal; set => maxDecimal = value; }
 
     void Start()
     {
@@ -30,7 +32,7 @@ public class RhythmManager : MonoBehaviour
         float beatPosition = _conductor.songPositionInBeats;
         int firstDecimal = Mathf.FloorToInt((beatPosition % 1) * 10);
 
-        if (firstDecimal <= minDecimal || firstDecimal >= maxDecimal)
+        if (firstDecimal <= MinDecimal || firstDecimal >= MaxDecimal)
         {
             //Debug.LogWarning("Valid beat");
             _isBeatActivated = true;

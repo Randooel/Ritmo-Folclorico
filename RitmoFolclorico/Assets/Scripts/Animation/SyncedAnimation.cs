@@ -3,10 +3,13 @@ using UnityEngine;
 using DG.Tweening;
 using UnityEditor;
 
-public class SyncedAnimation : MonoBehaviour
+public class SyncedAnimation : MonoBehaviour, IDanceable
 {
     Conductor conductor;
+    RhythmManager rhythmManager;
+
     [SerializeField] Animator animator;
+    [SerializeField] bool isOnBeat;
 
     [SerializeField] AnimationStateReference animationStateReference, npcRef0, npcRef1;
     [SerializeField] GameObject[] referenceNPC;
@@ -15,9 +18,21 @@ public class SyncedAnimation : MonoBehaviour
 
     AnimatorStateInfo stateInfo;
 
+    void OnEnable()
+    {
+        RhythmEvent.onBeat += OnBeat;
+    }
+
+    void OnDisable()
+    {
+        RhythmEvent.onBeat -= OnBeat;
+    }
+
     void Start()
     {
         conductor = FindObjectOfType<Conductor>();
+        rhythmManager = FindObjectOfType<RhythmManager>();
+
         animator = GetComponent<Animator>();
         animationStateReference = FindObjectOfType<AnimationStateReference>();
 
@@ -30,24 +45,76 @@ public class SyncedAnimation : MonoBehaviour
         
     }
 
+    public void OnBeat()
+    {
+        if(stateInfo.IsName("Walk"))
+        {
+            if(!isOnBeat)
+            {
+                isOnBeat = true;
+            }
+        }
+    }
+
     public void OnAnimationStarted()
     {
+        CheckIfOnBeat();
+
         stateInfo = animator.GetCurrentAnimatorStateInfo(0);
 
         if (stateInfo.IsName("Idle"))
         {
-            npcTime0 = npcRef0.normalizedTime;
-            
-
-            float animationFrame = npcTime0;
-            animator.Play(npcStateName0, 0, animationFrame);
+            PlayIdle();
         }
         else if (stateInfo.IsName("Walk"))
         {
-            npcTime1 = npcRef1.normalizedTime;
+            if (!isOnBeat)
+            {
+                StartCoroutine(WaitUntilNextBeat());
+            }
+        }
+    }
 
-            float animationFrame = npcTime1;
-            animator.Play(npcStateName1, 0, animationFrame);
+    void PlayIdle()
+    {
+        npcTime0 = npcRef0.normalizedTime;
+
+        float animationFrame = npcTime0;
+        animator.Play(npcStateName0, 0, animationFrame);
+    }
+
+    IEnumerator WaitUntilNextBeat()
+    {
+        PauseAnimation();
+
+        yield return new WaitUntil(() => isOnBeat);
+
+        UnpauseAnimation();
+    }
+
+    void PauseAnimation()
+    {
+        animator.speed = 0f;
+    }
+
+    void UnpauseAnimation()
+    {
+        animator.speed = 1f;
+    }
+
+    void CheckIfOnBeat()
+    {
+        float beatsPosition = conductor.songPositionInBeats;
+        float firstDecimal = Mathf.Floor((beatsPosition % 1f) * 10);
+
+
+        if (firstDecimal >= 1 || firstDecimal <= 8)
+        {
+            isOnBeat = true;
+        }
+        else
+        {
+            isOnBeat = false;
         }
     }
 }
