@@ -42,7 +42,9 @@ public class PlayerRhythm : MonoBehaviour
     public int currentAction;
 
     [Header("Followers")]
-    [SerializeField] private List<GameObject> followers = new List<GameObject>(); 
+    [SerializeField] private List<GameObject> followers = new List<GameObject>();
+    [SerializeField] GameObject[] followerSlot;
+    int nextSlot;
 
     [Header("Hit Booleans")]
     public bool hitWrong;
@@ -143,13 +145,13 @@ public class PlayerRhythm : MonoBehaviour
                     {
                         hitPerfect = true;
                         OnMouseClick?.Invoke("Perfect");
-                        Debug.Log("PERFECT!");
+                        //Debug.Log("PERFECT!");
                     }
                     else
                     {
                         hitCorrect = true;
                         OnMouseClick?.Invoke("Correct");
-                        Debug.Log("Correct!");
+                        //Debug.Log("Correct!");
                     }
                 }
                 else
@@ -159,7 +161,7 @@ public class PlayerRhythm : MonoBehaviour
 
                     // Clear the current command list if the player gets the rhythm wrong
                     OnWrongTime();
-                    Debug.Log("Wrong!");
+                    //Debug.Log("Wrong!");
                 }
             }
             StartCoroutine(ResetBools());
@@ -296,8 +298,11 @@ public class PlayerRhythm : MonoBehaviour
     public void AddFollower(GameObject newFollower)
     {
         newFollower.GetComponent<BoxCollider2D>().enabled = false;
-        newFollower.transform.position -= transform.right * 10;
+        // newFollower.transform.position += transform.right * 10;
 
+        newFollower.transform.position = followerSlot[nextSlot].transform.position;
+
+        nextSlot++;
 
         followers.Add(newFollower);
     }

@@ -1,75 +1,53 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 using DG.Tweening;
+using UnityEditor;
 
-public class SyncedAnimation : MonoBehaviour, IDanceable
+public class SyncedAnimation : MonoBehaviour
 {
     Conductor conductor;
-    Animator animator;
-    [SerializeField] bool isOnBeat;
-    [SerializeField] float defaultAnimatorSpeed;
+    [SerializeField] Animator animator;
 
-    void OnEnable()
-    {
-        RhythmEvent.onBeat += OnBeat;
-    }
+    [SerializeField] AnimationStateReference animationStateReference, npcRef0, npcRef1;
+    [SerializeField] GameObject[] referenceNPC;
+    float npcTime0, npcTime1;
+    string npcStateName0, npcStateName1;
 
-    void OnDisable()
-    {
-        RhythmEvent.onBeat -= OnBeat;
-    }
+    AnimatorStateInfo stateInfo;
 
     void Start()
     {
-        conductor = FindObjectOfType<Conductor>(); 
+        conductor = FindObjectOfType<Conductor>();
         animator = GetComponent<Animator>();
+        animationStateReference = FindObjectOfType<AnimationStateReference>();
 
-        defaultAnimatorSpeed = animator.speed;
-    }
+        npcRef0 = referenceNPC[0].GetComponent<AnimationStateReference>();
+        npcStateName0 = npcRef0.stateName;
+        
 
-    public void OnBeat()
-    {
-        // Fullfil the WaitUntilNextBeat's requisites to unpause the animation
-        isOnBeat = true;
-
-        UnpauseAnimation();
-
-        // Resets the bool so the script will be ready to handle the next animation transition
-        DOVirtual.DelayedCall(conductor.SecPerBeat / 2, () =>
-        {
-            isOnBeat = false;
-        });
+        npcRef1 = referenceNPC[1].GetComponent<AnimationStateReference>();
+        npcStateName1 = npcRef1.stateName;
+        
     }
 
     public void OnAnimationStarted()
     {
-        if (!isOnBeat)
+        stateInfo = animator.GetCurrentAnimatorStateInfo(0);
+
+        if (stateInfo.IsName("Idle"))
         {
-            Debug.LogError("IS OFF BEAT");
-            // Updates the animator speed every time a new animation starts off beat
-            defaultAnimatorSpeed = animator.speed;
+            npcTime0 = npcRef0.normalizedTime;
+            
 
-            // Pauses animation
-            PauseAnimation();
-
-            StartCoroutine(WaitUntilNextBeat());
+            float animationFrame = npcTime0;
+            animator.Play(npcStateName0, 0, animationFrame);
         }
-    }
+        else if (stateInfo.IsName("Walk"))
+        {
+            npcTime1 = npcRef1.normalizedTime;
 
-    void UnpauseAnimation()
-    {
-        animator.speed = defaultAnimatorSpeed;
-    }
-
-    void PauseAnimation()
-    {
-        animator.speed = 0;
-    }
-
-    IEnumerator WaitUntilNextBeat()
-    {
-        yield return new WaitUntil(() => isOnBeat);
+            float animationFrame = npcTime1;
+            animator.Play(npcStateName1, 0, animationFrame);
+        }
     }
 }

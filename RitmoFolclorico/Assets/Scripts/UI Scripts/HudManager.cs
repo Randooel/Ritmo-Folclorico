@@ -1,16 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.PackageManager.Requests;
+//using UnityEditor.PackageManager.Requests;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
-public class HudManager : MonoBehaviour
+public class HudManager : MonoBehaviour //, IDanceable
 {
     private Conductor _conductor;
     private PlayerRhythm _playerRhythm;
     private PlayerCommands _playerCommands;
 
     private Coroutine _resetColorCoroutine;
+
+    [SerializeField] int minDecimal, maxDecimal;
 
     [SerializeField] private Image _rhythmRing;
 
@@ -39,15 +42,40 @@ public class HudManager : MonoBehaviour
 
     void Update()
     {
-        ChangeAlphaOnBeat();
+        // ChangeAlphaOnBeat();
     }
 
+    void OnEnable()
+    {
+        RhythmEvent.onBeat += OnBeat;
+    }
+
+    void OnDisable()
+    {
+        RhythmEvent.onBeat -= OnBeat;
+    }
+
+    public void OnBeat()
+    {
+        //Debug.Log("HUD ON BEAT!!!");
+
+        ChangeAlpha(_targetAlpha);
+
+        DOVirtual.DelayedCall(_conductor.SecPerBeat / 2, () =>
+        {
+            ChangeAlpha(_defaultAlpha);
+        });
+    }
+
+
+    /*
     public void ChangeAlphaOnBeat()
     {
         float beatsPosition = _conductor.songPositionInBeats;
         float firstDecimal = Mathf.Floor((beatsPosition % 1f) * 10);
 
-        if (firstDecimal >= 8 || firstDecimal <= 2)
+        
+        if (firstDecimal >= minDecimal || firstDecimal <= maxDecimal)
         {
             ChangeAlpha(_targetAlpha);
         }
@@ -56,6 +84,7 @@ public class HudManager : MonoBehaviour
             ChangeAlpha(_defaultAlpha);
         }
     }
+    */
 
     public void ChangeAlpha(float alpha)
     {

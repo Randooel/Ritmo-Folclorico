@@ -11,8 +11,6 @@ public class RhythmManager : MonoBehaviour
 
     [SerializeField] bool _isBeatActivated;
 
-    private int _lastDecimal = -1;
-
 
     void Start()
     {
@@ -34,7 +32,7 @@ public class RhythmManager : MonoBehaviour
 
         if (firstDecimal <= minDecimal || firstDecimal >= maxDecimal)
         {
-            Debug.LogWarning("Valid beat");
+            //Debug.LogWarning("Valid beat");
             _isBeatActivated = true;
 
             RhythmEvent.onBeat?.Invoke();

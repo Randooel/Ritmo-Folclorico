@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using UnityEngine;
+using DG.Tweening;
+using UnityEngine.Events;
 
 public class WhistlerBrain : MonoBehaviour, IDanceable
 {
@@ -129,7 +131,7 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
             {
                 ChangeToIdleState();
 
-                Debug.Log(_currentState);
+                //Debug.Log(_currentState);
             }
         }
 
@@ -157,7 +159,10 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
                 ChangeToWalkState();
                 break;
             case 1:
-                Recruit();
+                if(_currentState == State.Whistle)
+                {
+                    Recruit();
+                }
                 break;
             case 2:
                 BossDance();
@@ -231,7 +236,7 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
         StopCoroutine(OnomatopeiaHandler());
         _currentState = State.Idle;
 
-        changeStateCooldown = conductor.SecPerBeat * 2;
+        changeStateCooldown = conductor.SecPerBeat * 4;
     }
 
     public void ChangeToWalkState()
@@ -239,7 +244,7 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
         StopCoroutine(OnomatopeiaHandler());
         _currentState = State.Walk;
 
-        changeStateCooldown = conductor.SecPerBeat * 2;
+        changeStateCooldown = conductor.SecPerBeat * 4;
     }
 
     /*
@@ -255,7 +260,6 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
         yield return new WaitForSeconds(conductor.SecPerBeat*1);
         _currentState = State.Idle;
     }
-    
 
     IEnumerator OnomatopeiaHandler()
     {
