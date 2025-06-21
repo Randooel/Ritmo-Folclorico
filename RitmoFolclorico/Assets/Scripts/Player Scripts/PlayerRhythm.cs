@@ -240,7 +240,7 @@ public class PlayerRhythm : MonoBehaviour
         {
             if (playerCommands.mouseButtonPressed[i] != whistlerBrain.CurrentCommandSequence[i])
             {
-                Debug.LogWarning("OnWrongTime");
+                //Debug.LogWarning("OnWrongTime");
 
                 hitWrong = true;
                 OnMouseClick?.Invoke("Wrong");
