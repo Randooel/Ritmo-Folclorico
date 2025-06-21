@@ -131,6 +131,12 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
     {
         if (CurrentState == State.Whistle)
         {
+            if(currentCoroutine != null)
+            {
+                StopCoroutine(currentCoroutine);
+                
+            }
+
             currentCoroutine = StartCoroutine(OnomatopeiaHandler());
         }
     }
@@ -308,6 +314,8 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
             onomatopeia[1].SetActive(false);
 
             ChangeToIdleState();
+
+            currentCoroutine = null;
 
             yield break;
         }
