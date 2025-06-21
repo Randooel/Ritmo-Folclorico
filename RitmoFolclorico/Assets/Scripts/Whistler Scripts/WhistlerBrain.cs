@@ -153,11 +153,13 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
             CurrentState = State.Whistle;
         }
 
-        if(other.TryGetComponent(out BossCharacter boss))
+        if (other.TryGetComponent(out BossCharacter boss))
         {
             currentBoss = boss;
-            if(currentBoss.bossName == "Boitata")
+
+            if(currentBoss.bossName == "Boitatá")
             {
+                Debug.Log("COLLIDED WITH BOITATA!");
                 CurrentCommandSequence = boitataCommands.commandSets[2 + currentCombatIndex].commandSequence;
                 CurrentState = State.Whistle;
             }
