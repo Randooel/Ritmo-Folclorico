@@ -50,6 +50,7 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
     bool resetCooldown;
 
     private Collider2D collider;
+    [SerializeField] bool shouldEnableCollider  = true;
 
     [SerializeField] int currentIndex;
 
@@ -68,6 +69,20 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
     public GameObject currentEnemy;
     public BossCharacter currentBoss;
 
+    private float currentChangeStateCooldown;
+
+    void OnEnable()
+    {
+        RhythmEvent.onBeat += OnBeat;
+        PlayerRhythm.OnActionComplete += HandleAction;
+    }
+
+    void OnDisable()
+    {
+        RhythmEvent.onBeat -= OnBeat;
+        PlayerRhythm.OnActionComplete -= HandleAction;
+    }
+
     void Start()
     {
         playerCommands = FindObjectOfType<PlayerCommands>();
@@ -78,7 +93,7 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
         collider = GetComponent<Collider2D>();
 
         CurrentState = State.Idle;
-
+        
         CurrentCommandSequence = basicCommands.commandSets[0].commandSequence;
 
         onomatopeia[0].gameObject.SetActive(false);
@@ -115,18 +130,6 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
         }
     }
 
-    void OnEnable()
-    {
-        RhythmEvent.onBeat += OnBeat;
-        PlayerRhythm.OnActionComplete += HandleAction;
-    }
-
-    void OnDisable()
-    {
-        RhythmEvent.onBeat -= OnBeat;
-        PlayerRhythm.OnActionComplete -= HandleAction;
-    }
-
     public void OnBeat()
     {
         if (CurrentState == State.Whistle)
@@ -146,6 +149,8 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
     {
         if (other.gameObject.CompareTag("LostNpc"))
         {
+            shouldEnableCollider = false;
+
             CurrentCommandSequence = basicCommands.commandSets[1 + currentCombatIndex].commandSequence;
 
             currentEnemy = other.gameObject;
@@ -210,12 +215,23 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
     // OUTPUT
     void HandleIdle()
     {
+        changeStateCooldown = currentChangeStateCooldown;
         resetCooldown = true;
 
-        DOVirtual.DelayedCall(conductor.SecPerBeat * 3, () =>
+        if(shouldEnableCollider)
         {
-            collider.enabled = true;
-        });        
+            DOVirtual.DelayedCall(conductor.SecPerBeat * 3, () =>
+            {
+                collider.enabled = true;
+            });
+        }
+        else if(!shouldEnableCollider)
+        {
+            Debug.Log(currentCombatIndex);
+            CurrentCommandSequence = basicCommands.commandSets[1 + currentCombatIndex].commandSequence;
+
+            StartCoroutine(SetToWhistle());
+        }
     }
 
     void HandleWhistle()
@@ -236,13 +252,17 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
     public void Recruit()
     {
         CurrentCommandSequence = basicCommands.commandSets[0].commandSequence;
+        Debug.Log("RECRUIT");
         currentCombatIndex++;
+        Debug.Log("ALO");
 
         if (currentCombatIndex >= 2)
         {
             currentCombatIndex = 0;
             OnEnemyRescued?.Invoke(currentEnemy);
             currentEnemy = null;
+
+            shouldEnableCollider = true;
         }
 
         ChangeToIdleState();
@@ -266,9 +286,15 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
     // COROUTINE RELATED
     public void ChangeToIdleState()
     {
+        resetCooldown = false;
+
+        currentIndex = 0;
+
+        StopCoroutine(SetToWhistle());
         StopCoroutine(OnomatopeiaHandler());
 
-        changeStateCooldown = conductor.SecPerBeat * 3;
+        changeStateCooldown = conductor.SecPerBeat * 4;
+        currentChangeStateCooldown = changeStateCooldown;
 
         CurrentState = State.Idle;
     }
@@ -278,6 +304,7 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
         StopCoroutine(OnomatopeiaHandler());
 
         changeStateCooldown = conductor.SecPerBeat * 4;
+        currentChangeStateCooldown += changeStateCooldown;
 
         CurrentState = State.Walk;
     }
@@ -287,6 +314,13 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
         yield return new WaitForSeconds(conductor.SecPerBeat*1);
 
         CurrentState = State.Idle;
+    }
+
+    IEnumerator SetToWhistle()
+    {
+        yield return new WaitForSeconds(conductor.SecPerBeat * 3);
+
+        CurrentState = State.Whistle;
     }
 
     IEnumerator OnomatopeiaHandler()

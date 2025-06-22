@@ -252,10 +252,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 0}
+  isOnBeat: 0
   animationStateReference: {fileID: 0}
+  npcRef0: {fileID: 0}
+  npcRef1: {fileID: 0}
   referenceNPC:
   - {fileID: 0}
   - {fileID: 0}
+  isPlayer: 1
+  playerRef: {fileID: 1236426298078715293}
 --- !u!114 &6304822236436240172
 MonoBehaviour:
   m_ObjectHideFlags: 0

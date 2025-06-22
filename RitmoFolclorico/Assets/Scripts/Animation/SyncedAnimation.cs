@@ -13,6 +13,7 @@ public class SyncedAnimation : MonoBehaviour, IDanceable
 
     [SerializeField] AnimationStateReference animationStateReference, npcRef0, npcRef1;
     [SerializeField] GameObject[] referenceNPC;
+
     float npcTime0, npcTime1;
     string npcStateName0, npcStateName1;
 

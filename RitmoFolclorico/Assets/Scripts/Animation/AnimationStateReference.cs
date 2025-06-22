@@ -12,6 +12,7 @@ public class AnimationStateReference : MonoBehaviour
     public float normalizedTime;
 
     [SerializeField] bool isIdle;
+    [SerializeField] bool isPlayer;
 
     void Start()
     {
