@@ -10,7 +10,7 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
 {
     private PlayerCommands playerCommands;
     private PlayerRhythm playerRhythm;
-    private Conductor conductor;
+    protected Conductor conductor;
 
     public Animator animator;
 
@@ -42,7 +42,7 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
 
     // private bool iamPaullo;
 
-    [SerializeField] private Coroutine currentCoroutine;
+    [SerializeField] protected Coroutine currentCoroutine;
 
     [Header("Whistle Settings")]
     [SerializeField] private float whistleWaitTime;
@@ -52,7 +52,7 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
     private Collider2D collider;
     [SerializeField] bool shouldEnableCollider  = true;
 
-    [SerializeField] int currentIndex;
+    [SerializeField] protected int currentIndex;
 
     [SerializeField] private List<int> currentCommandSequence;
     public List<int> CurrentCommandSequence { get => currentCommandSequence; set => currentCommandSequence = value; }
@@ -66,8 +66,12 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
     public CommandCombinations basicCommands;
     public CommandCombinations boitataCommands;
 
+    [Header("NPCs & Boss Stuff")]
     public GameObject currentEnemy;
-    public BossCharacter currentBoss;
+    public GameObject currentBossObject;
+    public BossCharacter currentBossScript;
+
+    [SerializeField] bool isFacingBoss =  false;
 
     private float currentChangeStateCooldown;
 
@@ -137,7 +141,6 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
             if(currentCoroutine != null)
             {
                 StopCoroutine(currentCoroutine);
-                
             }
 
             currentCoroutine = StartCoroutine(OnomatopeiaHandler());
@@ -160,12 +163,19 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
 
         if (other.TryGetComponent(out BossCharacter boss))
         {
-            currentBoss = boss;
+            currentBossScript = boss;
+            currentBossObject = other.gameObject;
 
-            if(currentBoss.bossName == "Boitatá")
+            if(currentBossScript.bossName == "Boitatá")
             {
+                shouldEnableCollider = false;
+                isFacingBoss = true;
+
                 Debug.Log("COLLIDED WITH BOITATA!");
-                CurrentCommandSequence = boitataCommands.commandSets[2 + currentCombatIndex].commandSequence;
+
+                currentCombatIndex = 2;
+                CurrentCommandSequence = boitataCommands.commandSets[currentCombatIndex].commandSequence;
+
                 CurrentState = State.Whistle;
             }
         }
@@ -199,7 +209,7 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
                 ChangeToWalkState();
                 break;
             case 1:
-                if(CurrentState == State.Whistle)
+                if(CurrentState == State.Whistle && !isFacingBoss)
                 {
                     Recruit();
                 }
@@ -225,7 +235,7 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
                 collider.enabled = true;
             });
         }
-        else if(!shouldEnableCollider)
+        else if(!shouldEnableCollider && !isFacingBoss)
         {
             Debug.Log(currentCombatIndex);
             CurrentCommandSequence = basicCommands.commandSets[1 + currentCombatIndex].commandSequence;
@@ -254,33 +264,48 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
         CurrentCommandSequence = basicCommands.commandSets[0].commandSequence;
         Debug.Log("RECRUIT");
         currentCombatIndex++;
-        Debug.Log("ALO");
 
-        if (currentCombatIndex >= 2)
+        if(!isFacingBoss)
         {
-            currentCombatIndex = 0;
-            OnEnemyRescued?.Invoke(currentEnemy);
-            currentEnemy = null;
+            if (currentCombatIndex >= 2)
+            {
+                currentCombatIndex = 0;
+                OnEnemyRescued?.Invoke(currentEnemy);
+                currentEnemy = null;
 
-            shouldEnableCollider = true;
-        }
+                shouldEnableCollider = true;
+            }
+        }       
 
         ChangeToIdleState();
     }
 
     public void BossDance()
     {
-        CurrentCommandSequence = basicCommands.commandSets[0].commandSequence;
-        currentCombatIndex++;
-
-        if (currentCombatIndex >= 3)
+        if(currentBossScript.currentDance < 3)
+        {
+            currentBossScript.DecideAction();
+            currentBossScript.currentDance++;
+        }
+        if (currentCombatIndex == 4)
         {
             currentCombatIndex = 0;
-            OnEnemyRescued?.Invoke(currentBoss.gameObject);
             currentEnemy = null;
+
+            CurrentCommandSequence = basicCommands.commandSets[0].commandSequence;
+
+            DOVirtual.DelayedCall(conductor.SecPerBeat * 4, () =>
+            {
+                OnEnemyRescued?.Invoke(currentBossScript.gameObject);
+            });
+        }
+        else
+        {
+            currentCombatIndex++;
+            CurrentCommandSequence = boitataCommands.commandSets[currentCombatIndex].commandSequence;
         }
 
-        SetToIdle();
+        ChangeToIdleState();
     }
 
     // COROUTINE RELATED
@@ -313,18 +338,20 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
     {
         yield return new WaitForSeconds(conductor.SecPerBeat*1);
 
-        CurrentState = State.Idle;
+        ChangeToIdleState();
     }
 
     IEnumerator SetToWhistle()
     {
-        yield return new WaitForSeconds(conductor.SecPerBeat * 3);
+        yield return new WaitForSeconds(conductor.SecPerBeat * 4);
 
         CurrentState = State.Whistle;
     }
 
     IEnumerator OnomatopeiaHandler()
     {
+        Debug.Log(currentCombatIndex);
+
         GameObject onomatopeia1 = onomatopeia[0].gameObject;
         GameObject onomatopeia2 = onomatopeia[1].gameObject;
 
@@ -343,6 +370,7 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
                 animator.SetTrigger("isWhistlingOno2");
             }
         }
+        // Ends the 'for'
         else
         {
             currentIndex = 0;

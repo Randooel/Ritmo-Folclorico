@@ -7,7 +7,7 @@ public class Conductor : MonoBehaviour
 {
     // READ ME: This script is responsible for keeping track the music's rythm and
     // current position (in seconds)
-    [Header("ATENTION: ONLY THE 'songPosition' FIELD MUST BE EDITED.")]
+    [Header("ATENTION: ONLY THE '_songBpm' FIELD MUST BE EDITED.")]
     [Header("All other fields are filled automatically")]
 
     [Header("Song Info")]
@@ -81,7 +81,10 @@ void Awake()
 
         //calculate the loop position
         if (songPositionInBeats >= (completedLoops + 1) * beatsPerLoop)
+        {
             completedLoops++;
+        }
+
         loopPositionInBeats = songPositionInBeats - completedLoops * beatsPerLoop;
 
         loopPositionInAnalog = loopPositionInBeats / beatsPerLoop;

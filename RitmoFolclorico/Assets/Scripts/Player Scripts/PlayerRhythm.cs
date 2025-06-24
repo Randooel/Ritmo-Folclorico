@@ -345,6 +345,11 @@ public class PlayerRhythm : MonoBehaviour
             _isCommandPrintCleared = true;
             //_wasWrongTime = true;
         }
+        for (int i = 0; i < followers.Count; i++)
+        {
+            Animator anim = followers[i].GetComponent<Animator>();
+            anim.SetTrigger("isDisapproving");
+        }
     }
 
 
