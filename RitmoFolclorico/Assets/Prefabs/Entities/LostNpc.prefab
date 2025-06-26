@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2575902941376753436}
+  - component: {fileID: 3176264496200742152}
   - component: {fileID: 6146644438621406970}
   - component: {fileID: 6397899622185330282}
   - component: {fileID: 4381055453121543433}
@@ -36,7 +37,7 @@ Transform:
   - {fileID: 2962656347521676770}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6146644438621406970
+--- !u!114 &3176264496200742152
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -45,11 +46,30 @@ MonoBehaviour:
   m_GameObject: {fileID: 1230130281352509486}
   m_Enabled: 1
   m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5720241d6df1d63498057b6cf34c227d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _conductor: {fileID: 0}
+  currentState: 0
+  _visualObject: {fileID: 2125819621979225293}
+  _oneBeat: 0
+--- !u!114 &6146644438621406970
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1230130281352509486}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 637a3cc54170df5429a2afb6536e0cf6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 0}
+  isOnBeat: 0
   animationStateReference: {fileID: 0}
+  npcRef0: {fileID: 0}
+  npcRef1: {fileID: 0}
   referenceNPC:
   - {fileID: 0}
   - {fileID: 0}
@@ -61,7 +81,7 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1230130281352509486}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 11580d99a7d375d48bf4c994d0b049f6, type: 2}
   m_CullingMode: 0

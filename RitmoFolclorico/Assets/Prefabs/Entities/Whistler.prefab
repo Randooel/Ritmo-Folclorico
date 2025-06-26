@@ -293,6 +293,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6170253425273489345}
+  - component: {fileID: 9221580316208555187}
   - component: {fileID: 4519982252709102555}
   - component: {fileID: 6907884571030454281}
   - component: {fileID: 3024128890887485828}
@@ -323,7 +324,7 @@ Transform:
   - {fileID: 4944535511176892301}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4519982252709102555
+--- !u!114 &9221580316208555187
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -332,11 +333,30 @@ MonoBehaviour:
   m_GameObject: {fileID: 9188577593249287412}
   m_Enabled: 1
   m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5720241d6df1d63498057b6cf34c227d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _conductor: {fileID: 0}
+  currentState: 0
+  _visualObject: {fileID: 1757665709373646135}
+  _oneBeat: 0
+--- !u!114 &4519982252709102555
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9188577593249287412}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 637a3cc54170df5429a2afb6536e0cf6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 0}
+  isOnBeat: 0
   animationStateReference: {fileID: 0}
+  npcRef0: {fileID: 0}
+  npcRef1: {fileID: 0}
   referenceNPC:
   - {fileID: 0}
   - {fileID: 0}
@@ -347,7 +367,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9188577593249287412}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fd7a5c87da682a341bc35dcb4ab061c0, type: 3}
   m_Name: 
@@ -355,6 +375,9 @@ MonoBehaviour:
   animator: {fileID: 0}
   _currentState: 0
   whistleWaitTime: 0
+  changeStateCooldown: 0
+  shouldEnableCollider: 1
+  currentIndex: 0
   currentCommandSequence: 
   onomatopeia:
   - {fileID: 3885055382581950967}
@@ -362,7 +385,9 @@ MonoBehaviour:
   basicCommands: {fileID: 11400000, guid: 2fe575659e3b9c94eba16cf004fdca14, type: 2}
   boitataCommands: {fileID: 11400000, guid: e080ab7f1a16e8441b0de4d4dcd51a72, type: 2}
   currentEnemy: {fileID: 0}
-  currentBoss: {fileID: 0}
+  currentBossObject: {fileID: 0}
+  currentBossScript: {fileID: 0}
+  isFacingBoss: 0
 --- !u!61 &3024128890887485828
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -443,7 +468,7 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9188577593249287412}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: bc5a8872712c3144b8abbe2ab3b01a5d, type: 2}
   m_CullingMode: 0

@@ -171,8 +171,6 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
                 shouldEnableCollider = false;
                 isFacingBoss = true;
 
-                Debug.Log("COLLIDED WITH BOITATA!");
-
                 currentCombatIndex = 2;
                 CurrentCommandSequence = boitataCommands.commandSets[currentCombatIndex].commandSequence;
 
