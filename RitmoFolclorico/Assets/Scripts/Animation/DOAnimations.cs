@@ -42,10 +42,21 @@ public class DOAnimations : MonoBehaviour, IDanceable
     [Header("Visual Parameters")]
 
     [SerializeField] GameObject _visualObject;
+    [SerializeField] GameObject _bodyObject;
 
     private Vector2 originalScale;
 
     [SerializeField] float _oneBeat;
+
+    // DOTween IDs
+    const string TiltTweenID = "Tilt";
+    const string IdleTweenID = "Idle;";
+    const string WalkTweenID = "Walk";
+    const string Ono1TweenID = "Ono1";
+    const string Ono2TweenID = "Ono2";
+    const string WhistleOno1TweenID = "WhislteOno1";
+    const string WhistleOno2TweenID = "WhistleOno2";
+    const string DisapproveOno2TweenID = "Disapprove";
 
     
 
@@ -66,24 +77,43 @@ public class DOAnimations : MonoBehaviour, IDanceable
         if(_conductor != null )
         {
             _oneBeat = 0.6f;
-            Debug.Log(_oneBeat);
         }
         else
         {
             Debug.LogWarning("Conductor script not found.");
         }
 
-        CurrentState = State.Idle;
-
-        _visualObject = transform.GetChild(0).gameObject ;
+        CurrentState = State.Idle;      
 
         if(_visualObject == null)
         {
-            Debug.LogError("Please assign a visual Object");
+            _visualObject = transform.GetChild(0).gameObject;
+
+            if (_visualObject == null)
+            {
+                Debug.LogError("Please assign a visualObject");
+            }
         }
         else
         {
             originalScale = _visualObject.transform.localScale;
+        }
+
+        if(_bodyObject == null)
+        {
+            Debug.LogError("Please assign a bodyObject");
+        }
+    }
+
+    void Update()
+    {
+        if(currentState == State.Ono1)
+        {
+            DOOno1();
+        }
+        else if(currentState == State.Ono2)
+        {
+            DOOno2();
         }
     }
 
@@ -92,6 +122,7 @@ public class DOAnimations : MonoBehaviour, IDanceable
     // INPUT
     public void OnBeat()
     {
+        DOTilt();
         CheckCurrentState(currentState);
     }
 
@@ -191,36 +222,80 @@ public class DOAnimations : MonoBehaviour, IDanceable
     }
 
     // Animations
+    void KillPreviousTilt()
+    {
+        DOTween.Kill(TiltTweenID, true);
+    }
+    void DOTilt()
+    {
+        KillPreviousTilt();
+
+        _visualObject.transform.DOScale((new Vector3(1.2f, 1.2f, 0)), _oneBeat / 4)
+            .SetId("tilt").SetEase(Ease.OutQuad).OnComplete(() =>
+            {
+                _visualObject.transform.DOScale((originalScale), _oneBeat / 3)
+                .SetId("tilt").SetEase(Ease.OutQuad);
+            });
+    }
     void DOIdle()
     {
-        _visualObject.transform.DOScale(originalScale * new Vector2(0.8f, 1.2f), _oneBeat / 2).OnComplete(() =>
+        KillPreviousTilt();
+
+        _bodyObject.transform.DOScale(originalScale * new Vector2(0.8f, 1.2f), _oneBeat / 2)
+            .SetId("Idle").OnComplete(() =>
+            {
+                _bodyObject.transform.DOScale(originalScale, _oneBeat / 2).SetId("Idle");
+            });
+        /*
+        _bodyObject.transform.DOMoveY(0.004f, _oneBeat / 2).OnComplete(() =>
         {
-            _visualObject.transform.DOScale(originalScale, _oneBeat / 2);
+            _bodyObject.transform.DOMoveY(-0.004f, _oneBeat / 2);
         });
+        */
     }
     void DOWalk()
     {
+        KillPreviousTilt();
 
+        _bodyObject.transform.DOMoveY(2, _oneBeat /2).SetLoops(3);
     }
     void DOOno1()
     {
+        KillPreviousTilt();
 
+        _bodyObject.transform.DOMoveY(0.5f, _oneBeat / 2).OnComplete(() =>
+        {
+            _bodyObject.transform.DOMoveY(0, _oneBeat / 2);
+        });
+        _bodyObject.transform.DOMoveX(0.3f, _oneBeat / 2).OnComplete(() =>
+        {
+            _bodyObject.transform.DOMoveX(0, _oneBeat / 2);
+        });
     }
     void DOOno2()
     {
+        KillPreviousTilt();
 
+        // Animation logic goes here
     }
+
     // Whistler/NPC Exclusive Animations
     void DOWhistleOno1()
     {
+        KillPreviousTilt();
 
+        // Animation logic goes here
     }
     void DOWhistleOno2()
     {
+        KillPreviousTilt();
 
+        // Animation logic goes here
     }
     void DODisapprove()
     {
+        KillPreviousTilt();
 
+        // Animation logic goes here
     }
 }

@@ -254,6 +254,7 @@ MonoBehaviour:
   _conductor: {fileID: 0}
   currentState: 0
   _visualObject: {fileID: 8022040344959962250}
+  _bodyObject: {fileID: 8318536766500681573}
   _oneBeat: 0
 --- !u!114 &6304822236436240172
 MonoBehaviour:
@@ -281,7 +282,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd6b29e2fa1d23944b2be8397407faa3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animator: {fileID: 0}
   onDebug: 1
   minCorrectTime: 0.5
   maxCorrectTime: 1.5

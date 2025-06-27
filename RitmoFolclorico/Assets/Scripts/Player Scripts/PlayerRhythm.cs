@@ -11,7 +11,9 @@ public class PlayerRhythm : MonoBehaviour
     private Conductor conductor;
     private PlayerCommands playerCommands;
     private WhistlerBrain whistlerBrain;
-    [SerializeField] Animator animator;
+    private DOAnimations doAnimations;
+    private string nextState = "Idle";
+    //[SerializeField] Animator animator;
     
     public delegate void OnMouseClickDelegate(string hitType);
     public event OnMouseClickDelegate OnMouseClick;
@@ -59,14 +61,35 @@ public class PlayerRhythm : MonoBehaviour
     [SerializeField] bool _isCommandPrintCleared;
 
 
+    private void Awake()
+    {
+        doAnimations = GetComponentInChildren<DOAnimations>();
+        if(doAnimations == null)
+        {
+            Debug.LogError("doAnimations reference not found");
+        }
+    }
+
+    private void OnEnable()
+    {
+        WhistlerBrain.OnEnemyRescued += AddFollower;
+        doAnimations.OnAnimStateChanged += ChangeAnimState;
+    }
+
+    private void OnDisable()
+    {
+        WhistlerBrain.OnEnemyRescued -= AddFollower;
+        doAnimations.OnAnimStateChanged -= ChangeAnimState;
+    }
 
     void Start()
     {
         conductor = FindObjectOfType<Conductor>();
         playerCommands = FindObjectOfType<PlayerCommands>();
         whistlerBrain = FindObjectOfType<WhistlerBrain>();
+        doAnimations = GetComponent<DOAnimations>();
 
-        animator = GetComponent<Animator>();
+        //animator = GetComponent<Animator>();
 
         DeactivateCommandPrint();
 
@@ -91,15 +114,6 @@ public class PlayerRhythm : MonoBehaviour
     private void FixedUpdate()
     {
         HandleWalk();
-    }
-    private void OnEnable()
-    {
-        WhistlerBrain.OnEnemyRescued += AddFollower;
-    }
-
-    private void OnDisable()
-    {
-        WhistlerBrain.OnEnemyRescued -= AddFollower;
     }
 
     void BeatInput()
@@ -189,12 +203,13 @@ public class PlayerRhythm : MonoBehaviour
 
             playerCommands.mouseButtonPressed.Add(1);
 
-            animator.SetTrigger("isOno1");
+            nextState = "Ono1";
 
             for (int i = 0; i < followers.Count; i++)
             {
-                Animator anim = followers[i].GetComponent<Animator>();
-                anim.SetTrigger("isDancingOno1");
+                DOAnimations anim = followers[i].GetComponent<DOAnimations>();
+                //anim.SetTrigger("isDancingOno1");
+                anim.CurrentState = DOAnimations.State.Ono1;
             }
 
             if (index < commandPrint.Length)
@@ -213,12 +228,14 @@ public class PlayerRhythm : MonoBehaviour
 
             playerCommands.mouseButtonPressed.Add(2);
 
-            animator.SetTrigger("isOno2");
+            //animator.SetTrigger("isOno2");
+            nextState = "Ono2";
 
             for(int i = 0; i < followers.Count; i++)
             {
-                Animator anim = followers[i].GetComponent<Animator>();
-                anim.SetTrigger("isDancingOno2");
+                DOAnimations anim = followers[i].GetComponent<DOAnimations>();
+                //anim.SetTrigger("isDancingOno2");
+                anim.CurrentState = DOAnimations.State.Ono2;
             }
 
             if (index < commandPrint.Length)
@@ -269,7 +286,7 @@ public class PlayerRhythm : MonoBehaviour
         if(whistlerBrain.CurrentCommandSequence == whistlerBrain.basicCommands.commandSets[0].commandSequence)
         {
             tempoAnim = conductor.SecPerBeat * 2;
-            animator.SetTrigger("isWalking");
+            //animator.SetTrigger("isWalking");
             actionToCall = 0;
 
             for(int i = 0; i < followers.Count; i++)
@@ -352,6 +369,36 @@ public class PlayerRhythm : MonoBehaviour
         }
     }
 
+    void ChangeAnimState(DOAnimations.State state)
+    {
+        switch (nextState)
+        {
+            case "Idle":
+                doAnimations.CurrentState = DOAnimations.State.Idle;
+                break;
+            case "Walk":
+                doAnimations.CurrentState = DOAnimations.State.Walk;
+                break;
+            case "Ono1":
+                doAnimations.CurrentState = DOAnimations.State.Ono1;
+                break;
+            case "Ono2":
+                doAnimations.CurrentState = DOAnimations.State.Ono2;
+                break;
+            case "WhistleOno1":
+                doAnimations.CurrentState = DOAnimations.State.WhistleOno1;
+                break;
+            case "WhistleOno2":
+                doAnimations.CurrentState = DOAnimations.State.WhistleOno2;
+                break;
+            case "DisapproveOno1":
+                doAnimations.CurrentState = DOAnimations.State.Disapprove;
+                break;
+            default:
+                Debug.Log("On default case");
+                break;
+        }
+    }
 
     // Visual
     void DeactivateCommandPrint()

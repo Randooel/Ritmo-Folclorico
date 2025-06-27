@@ -4512,7 +4512,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.016104164, y: 0.022000002}
   m_AnchorMax: {x: 0.08381252, y: 0.061000004}
-  m_AnchoredPosition: {x: -819.07574, y: -449.7021}
+  m_AnchoredPosition: {x: -819.07574, y: -449.70105}
   m_SizeDelta: {x: 123.229225, y: 38.219997}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1279559950
@@ -4654,6 +4654,12 @@ Grid:
   m_CellGap: {x: 0, y: 0, z: 0}
   m_CellLayout: 0
   m_CellSwizzle: 0
+--- !u!1 &1392204167 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4155008250338205999, guid: a9c77dbe5a545164fb4b26550abbb095,
+    type: 3}
+  m_PrefabInstance: {fileID: 5200027864796374695}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1446477043
 GameObject:
   m_ObjectHideFlags: 0
@@ -5931,6 +5937,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Whistler
       objectReference: {fileID: 0}
+    - target: {fileID: 9221580316208555187, guid: a9c77dbe5a545164fb4b26550abbb095,
+        type: 3}
+      propertyPath: _bodyObject
+      value: 
+      objectReference: {fileID: 1392204167}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

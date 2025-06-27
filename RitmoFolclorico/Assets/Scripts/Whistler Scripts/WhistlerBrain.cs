@@ -11,8 +11,10 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
     private PlayerCommands playerCommands;
     private PlayerRhythm playerRhythm;
     protected Conductor conductor;
+    private DOAnimations doAnimations;
+    private string nextState = "Idle";
 
-    public Animator animator;
+    //public Animator animator;
 
     public delegate void OnEnemyRescuedDelegate(GameObject enemyRescued);
     public static event OnEnemyRescuedDelegate OnEnemyRescued;
@@ -79,12 +81,14 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
     {
         RhythmEvent.onBeat += OnBeat;
         PlayerRhythm.OnActionComplete += HandleAction;
+        doAnimations.OnAnimStateChanged += ChangeAnimState;
     }
 
     void OnDisable()
     {
         RhythmEvent.onBeat -= OnBeat;
         PlayerRhythm.OnActionComplete -= HandleAction;
+        doAnimations.OnAnimStateChanged -= ChangeAnimState;
     }
 
     void Start()
@@ -93,7 +97,7 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
         playerRhythm = GetComponent<PlayerRhythm>();
         conductor = FindObjectOfType<Conductor>();
 
-        animator = GetComponent<Animator>();
+        //animator = GetComponent<Animator>();
         collider = GetComponent<Collider2D>();
 
         CurrentState = State.Idle;
@@ -221,6 +225,37 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
     }
 
     // OUTPUT
+    void ChangeAnimState(DOAnimations.State state)
+    {
+        switch(nextState)
+        {
+            case "Idle":
+                doAnimations.CurrentState = DOAnimations.State.Idle;
+                break;
+            case "Walk":
+                doAnimations.CurrentState = DOAnimations.State.Walk;
+                break;
+            case "Ono1":
+                doAnimations.CurrentState = DOAnimations.State.Ono1;
+                break;
+            case "Ono2":
+                doAnimations.CurrentState = DOAnimations.State.Ono2;
+                break;
+            case "WhistleOno1":
+                doAnimations.CurrentState = DOAnimations.State.WhistleOno1;
+                break;
+            case "WhistleOno2":
+                doAnimations.CurrentState = DOAnimations.State.WhistleOno2;
+                break;
+            case "DisapproveOno1":
+                doAnimations.CurrentState = DOAnimations.State.Disapprove;
+                break;
+            default:
+                Debug.Log("On default case");
+                break;
+        }
+    }
+
     void HandleIdle()
     {
         changeStateCooldown = currentChangeStateCooldown;
@@ -252,7 +287,7 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
     {
         collider.enabled = false;
 
-        animator.SetTrigger("isWalking");
+        nextState = "Walk";
 
         StartCoroutine(SetToIdle());
     }
@@ -360,12 +395,12 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
             if (command == 1)
             {
                 onomatopeia1.SetActive(true);
-                animator.SetTrigger("isWhistlingOno1");
+                nextState = "WhistleOno1";
             }
             else if(command == 2)
             {
                 onomatopeia2.SetActive(true);
-                animator.SetTrigger("isWhistlingOno2");
+                nextState = "WhistleOno2";
             }
         }
         // Ends the 'for'
