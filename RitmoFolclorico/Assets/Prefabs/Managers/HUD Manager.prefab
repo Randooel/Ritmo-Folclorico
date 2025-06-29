@@ -44,7 +44,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6302184d4a72d5641bf395bc31cc0c98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _rhythmRing: {fileID: 0}
+  isRhythmRing: 1
+  minDecimal: 0
+  maxDecimal: 0
+  _uiImage: {fileID: 0}
+  _listImage: {fileID: 0}
+  _uiTranfosform: {fileID: 0}
+  _listTransform: {fileID: 0}
   defaultColor: {r: 1, g: 1, b: 1, a: 1}
   correctColor: {r: 0, g: 1, b: 0, a: 1}
   perfectColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}

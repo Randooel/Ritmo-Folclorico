@@ -7,6 +7,8 @@ using DG.Tweening;
 
 public class HudManager : MonoBehaviour //, IDanceable
 {
+    [SerializeField] bool isRhythmRing;
+
     private Conductor _conductor;
     private PlayerRhythm _playerRhythm;
     private PlayerCommands _playerCommands;
@@ -15,7 +17,12 @@ public class HudManager : MonoBehaviour //, IDanceable
 
     [SerializeField] int minDecimal, maxDecimal;
 
-    [SerializeField] private Image _rhythmRing;
+    [SerializeField] private Image _uiImage, _listImage;
+    [SerializeField] private Transform _uiTransform, _listTransform;
+
+    const string doWrongID = "wrong";
+    const string doCorrectID = "correct";
+    const string doPerfectID = "perfect";
 
     [Header("Color Settings")]
     public Color defaultColor = Color.white;
@@ -37,7 +44,10 @@ public class HudManager : MonoBehaviour //, IDanceable
         _playerRhythm.OnMouseClick += ChangeColorOnHit;
 
         _baseColor = defaultColor;
-        _rhythmRing.color = _baseColor;
+        _uiImage.color = _baseColor;
+        _listImage.color = _baseColor;
+
+
     }
 
     void Update()
@@ -61,36 +71,24 @@ public class HudManager : MonoBehaviour //, IDanceable
 
         ChangeAlpha(_targetAlpha);
 
+        DOTilt();
+
         DOVirtual.DelayedCall(_conductor.SecPerBeat / 2, () =>
         {
             ChangeAlpha(_defaultAlpha);
         });
     }
 
-
-    /*
-    public void ChangeAlphaOnBeat()
-    {
-        float beatsPosition = _conductor.songPositionInBeats;
-        float firstDecimal = Mathf.Floor((beatsPosition % 1f) * 10);
-
-        
-        if (firstDecimal >= minDecimal || firstDecimal <= maxDecimal)
-        {
-            ChangeAlpha(_targetAlpha);
-        }
-        else 
-        {
-            ChangeAlpha(_defaultAlpha);
-        }
-    }
-    */
-
     public void ChangeAlpha(float alpha)
     {
-        Color color = _rhythmRing.color;
+        Color color = _uiImage.color;
+        Color color2 = _listImage.color;
+
         color.a = alpha;
-        _rhythmRing.color = color;
+        color2.a = alpha;
+
+        _uiImage.color = color;
+        _listImage.color = color2;
     }
 
     public void ChangeColorOnHit(string HitType)
@@ -99,18 +97,25 @@ public class HudManager : MonoBehaviour //, IDanceable
         {
             case "Wrong":
                 _baseColor = wrongColor;
+                DOWrong();
                 break;
             case "Correct":
                 _baseColor = correctColor;
+                DOCorrect();
                 break;
             case "Perfect":
                 _baseColor = perfectColor;
+                DOPerfect();
                 break;
         }
 
-        Color newColor = _baseColor;
-        newColor.a = _rhythmRing.color.a;
-        _rhythmRing.color = newColor;
+        Color newUIColor = _baseColor;
+        Color newListColor = _baseColor;
+        newUIColor.a = _uiImage.color.a;
+        newListColor.a = _listImage.color.a;
+        _uiImage.color = newUIColor;
+        _listImage.color = newListColor;
+
 
         if (_resetColorCoroutine != null)
         {
@@ -123,6 +128,63 @@ public class HudManager : MonoBehaviour //, IDanceable
     {
         yield return new WaitForSeconds(_playerRhythm.boolWaitTime);
         _baseColor = defaultColor;
-        _rhythmRing.color = _baseColor;
+        _uiImage.color = _baseColor;
+        _listImage.color = _baseColor;
+    }
+
+    void DOTilt()
+    {
+        _listTransform.transform.DOScale(new Vector3(1.05f, 1.05f, 0),
+            _conductor.SecPerBeat / 3).SetLoops(2, LoopType.Yoyo);
+    }
+
+    void DOWrong()
+    {
+        DOKillHitAnim();
+
+        float duration = _conductor.SecPerBeat / 3;
+        float strength = 0.08f;
+        int vibrato = 10;
+        float randomness = 1;
+        bool fadeOut = false;
+
+        _listTransform.transform.DOShakeScale(duration, strength, vibrato, randomness,
+            fadeOut);
+        _listTransform.transform.DOShakePosition(duration, strength, vibrato, randomness,
+            fadeOut);
+        _listTransform.transform.DOShakeRotation(duration, strength, vibrato, randomness,
+            fadeOut);
+
+        _uiTransform.transform.DOShakeScale(duration, strength, vibrato, randomness,
+            fadeOut);
+        _uiTransform.transform.DOShakePosition(duration, strength, vibrato, randomness,
+            fadeOut);
+        _uiTransform.transform.DOShakeRotation(duration, strength, vibrato, randomness,
+            fadeOut);
+    }
+
+    void DOCorrect()
+    {
+        DOKillHitAnim();
+
+        _uiTransform.DOScale(new Vector3(1.01f, 1.01f, 0),
+            _conductor.SecPerBeat / 3).SetLoops(2, LoopType.Yoyo);
+        _listTransform.DOScale(new Vector3(1.02f, 1.02f, 0),
+            _conductor.SecPerBeat / 3).SetLoops(2, LoopType.Yoyo);
+    }
+
+    void DOPerfect()
+    {
+        DOKillHitAnim();
+
+        _uiTransform.transform.DOScale(new Vector3(1.02f, 1.02f, 0),
+             _conductor.SecPerBeat / 3).SetLoops(2, LoopType.Yoyo);
+        _listTransform.DOScale(new Vector3(1.02f, 1.02f, 0),
+            _conductor.SecPerBeat / 3).SetLoops(2, LoopType.Yoyo);
+    }
+
+    void DOKillHitAnim()
+    {
+        DOTween.Kill(transform);
     }
 }

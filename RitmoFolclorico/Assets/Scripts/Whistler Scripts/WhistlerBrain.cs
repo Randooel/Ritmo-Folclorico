@@ -77,6 +77,16 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
 
     private float currentChangeStateCooldown;
 
+
+    private void Awake()
+    {
+        doAnimations = GetComponentInChildren<DOAnimations>();
+        if (doAnimations == null)
+        {
+            Debug.LogError("doAnimations reference not found");
+        }
+    }
+
     void OnEnable()
     {
         RhythmEvent.onBeat += OnBeat;
