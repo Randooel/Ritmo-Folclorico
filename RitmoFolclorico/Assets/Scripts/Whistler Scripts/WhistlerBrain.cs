@@ -393,8 +393,6 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
 
     IEnumerator OnomatopeiaHandler()
     {
-        Debug.Log(currentCombatIndex);
-
         GameObject onomatopeia1 = onomatopeia[0].gameObject;
         GameObject onomatopeia2 = onomatopeia[1].gameObject;
 

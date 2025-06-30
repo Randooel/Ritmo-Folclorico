@@ -84,7 +84,7 @@ public class HudManager : MonoBehaviour //, IDanceable
         Color color = _uiImage.color;
         Color color2 = _listImage.color;
 
-        color.a = alpha;
+        color.a = alpha / 4;
         color2.a = alpha;
 
         _uiImage.color = color;

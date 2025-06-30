@@ -21,11 +21,13 @@ public class SongManager : MonoBehaviour
         {
             audioSource = GetComponent<AudioSource>();
         }
+
+        ChangeCurrentMusic();
     }
 
     void Update()
     {
-        ChangeCurrentMusic();
+        // ChangeCurrentMusic();
     }
 
     void ChangeCurrentMusic()
@@ -38,6 +40,7 @@ public class SongManager : MonoBehaviour
 
 
         // DELETE AFTER TESTS:
+        /*
         if (Input.GetKeyDown(KeyCode.Q))
         {
             _currentSongIndex = 0;
@@ -46,5 +49,6 @@ public class SongManager : MonoBehaviour
         {
             _currentSongIndex = 1;
         }
+        */
     }
 }
