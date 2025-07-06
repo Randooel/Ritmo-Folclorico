@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 using System;
+using Unity.VisualScripting;
 
 public class DOAnimations : MonoBehaviour, IDanceable
 {
@@ -108,38 +109,31 @@ public class DOAnimations : MonoBehaviour, IDanceable
 
     void SetIdle()
     {
-        CurrentState = State.Idle;
-        //CheckCurrentState(State.Idle);
+        currentState = State.Idle;
     }
     void SetWalk()
     {
-        CurrentState = State.Walk;
-        CheckCurrentState(State.Walk);
+        currentState = State.Walk;
     }
     void SetOno1()
     {
-        CurrentState = State.Ono1;
-        CheckCurrentState(State.Ono1);
+        currentState = State.Ono1;
     }
     void SetOno2()
     {
-        CurrentState = State.Ono2;
-        CheckCurrentState(State.Ono2);
+        currentState = State.Ono2;
     }
     void SetWhistleOno1()
     {
-        CurrentState = State.WhistleOno1;
-        CheckCurrentState(State.WhistleOno1);
+        currentState = State.WhistleOno1;
     }
     void SetWhistleOno2()
     {
-        CurrentState = State.WhistleOno2;
-        CheckCurrentState(State.WhistleOno2);
+        currentState = State.WhistleOno2;
     }
     void SetDisapprove()
     {
-        CurrentState = State.Disapprove;
-        CheckCurrentState(State.Disapprove);
+        currentState = State.Disapprove;
     }
 
 
@@ -181,7 +175,6 @@ public class DOAnimations : MonoBehaviour, IDanceable
     // OUTPUT
     void KillPreviousTilt()
     {
-        DOTween.Kill(_visualObject);
         DOTween.Kill(_bodyObject);
     }
 
@@ -190,7 +183,7 @@ public class DOAnimations : MonoBehaviour, IDanceable
     {
         KillPreviousTilt();
 
-        Sequence seq = DOTween.Sequence();
+        DG.Tweening.Sequence seq = DOTween.Sequence();
 
         seq.Append(_bodyObject.DOScale((new Vector3(1.2f, 1.2f, 1)), _oneBeat / 4).SetEase(Ease.OutQuad));
         seq.Append(_bodyObject.DOScale((new Vector3(1f,1f,1f)), _oneBeat / 3).SetEase(Ease.OutQuad));
@@ -208,11 +201,10 @@ public class DOAnimations : MonoBehaviour, IDanceable
     void DOOno1()
     {
         KillPreviousTilt();
+
         DOTween.Kill(_visualObject);
 
         float duration = _oneBeat / 2;
-
-        Debug.Log(2);
 
         _visualObject.DOLocalMoveY(1.2f, duration).SetLoops(2, LoopType.Yoyo).OnComplete(() =>
         {

@@ -5214,7 +5214,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.016104164, y: 0.022000002}
   m_AnchorMax: {x: 0.08381252, y: 0.061000004}
-  m_AnchoredPosition: {x: -819.07574, y: -449.69214}
+  m_AnchoredPosition: {x: -819.07574, y: -449.69092}
   m_SizeDelta: {x: 123.229225, y: 38.219997}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1279559950
@@ -6432,7 +6432,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2071295944
 Transform:
   m_ObjectHideFlags: 0
@@ -6664,6 +6664,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2383513057156458616, guid: 62ae416e38f13544db8633adb8154fa3,
         type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2383513057156458616, guid: 62ae416e38f13544db8633adb8154fa3,
+        type: 3}
       propertyPath: _conductor
       value: 
       objectReference: {fileID: 1264158434}
@@ -6715,6 +6720,11 @@ PrefabInstance:
     - target: {fileID: 3741071616878747857, guid: 62ae416e38f13544db8633adb8154fa3,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6035122813430254825, guid: 62ae416e38f13544db8633adb8154fa3,
+        type: 3}
+      propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -6877,7 +6887,12 @@ PrefabInstance:
     - target: {fileID: 9188577593249287412, guid: a9c77dbe5a545164fb4b26550abbb095,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9221580316208555187, guid: a9c77dbe5a545164fb4b26550abbb095,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9221580316208555187, guid: a9c77dbe5a545164fb4b26550abbb095,
         type: 3}
@@ -7084,6 +7099,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Idle Animation NPC
+      objectReference: {fileID: 0}
+    - target: {fileID: 8812418791819863962, guid: 993ec23735362e54d9c10f44e146c693,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

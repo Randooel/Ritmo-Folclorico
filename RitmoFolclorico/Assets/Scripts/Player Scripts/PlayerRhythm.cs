@@ -207,8 +207,6 @@ public class PlayerRhythm : MonoBehaviour
             nextState = "Ono1";
             ChangeAnimState(DOAnimations.State.Ono1);
 
-            Debug.Log(1);
-
             for (int i = 0; i < followers.Count; i++)
             {
                 DOAnimations anim = followers[i].GetComponent<DOAnimations>();
@@ -396,7 +394,7 @@ public class PlayerRhythm : MonoBehaviour
             case "WhistleOno2":
                 doAnimations.CurrentState = DOAnimations.State.WhistleOno2;
                 break;
-            case "DisapproveOno1":
+            case "Disapprove":
                 doAnimations.CurrentState = DOAnimations.State.Disapprove;
                 break;
             default:
