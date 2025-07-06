@@ -13,6 +13,7 @@ public class PlayerRhythm : MonoBehaviour
     private WhistlerBrain whistlerBrain;
     private DOAnimations doAnimations;
     private string nextState = "Idle";
+    
     //[SerializeField] Animator animator;
     
     public delegate void OnMouseClickDelegate(string hitType);
@@ -204,6 +205,9 @@ public class PlayerRhythm : MonoBehaviour
             playerCommands.mouseButtonPressed.Add(1);
 
             nextState = "Ono1";
+            ChangeAnimState(DOAnimations.State.Ono1);
+
+            Debug.Log(1);
 
             for (int i = 0; i < followers.Count; i++)
             {
@@ -230,8 +234,9 @@ public class PlayerRhythm : MonoBehaviour
 
             //animator.SetTrigger("isOno2");
             nextState = "Ono2";
+            ChangeAnimState(DOAnimations.State.Ono2);
 
-            for(int i = 0; i < followers.Count; i++)
+            for (int i = 0; i < followers.Count; i++)
             {
                 DOAnimations anim = followers[i].GetComponent<DOAnimations>();
                 //anim.SetTrigger("isDancingOno2");

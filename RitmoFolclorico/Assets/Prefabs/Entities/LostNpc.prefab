@@ -51,8 +51,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _conductor: {fileID: 0}
   currentState: 0
-  _visualObject: {fileID: 2125819621979225293}
-  _bodyObject: {fileID: 1779982716013077706}
+  _visualObject: {fileID: 2962656347521676770}
+  _bodyObject: {fileID: 612157300783290981}
   _oneBeat: 0
 --- !u!114 &6146644438621406970
 MonoBehaviour:

@@ -41,22 +41,14 @@ public class DOAnimations : MonoBehaviour, IDanceable
 
     [Header("Visual Parameters")]
 
-    [SerializeField] GameObject _visualObject;
-    [SerializeField] GameObject _bodyObject;
+    [SerializeField] Transform _visualObject;
+    [SerializeField] Transform _bodyObject;
 
-    private Vector2 originalScale;
+    private Vector3 originalScale;
+
+    private Vector3 startPos;
 
     [SerializeField] float _oneBeat;
-
-    // DOTween IDs
-    const string TiltTweenID = "Tilt";
-    const string IdleTweenID = "Idle;";
-    const string WalkTweenID = "Walk";
-    const string Ono1TweenID = "Ono1";
-    const string Ono2TweenID = "Ono2";
-    const string WhistleOno1TweenID = "WhislteOno1";
-    const string WhistleOno2TweenID = "WhistleOno2";
-    const string DisapproveOno2TweenID = "Disapprove";
 
     
 
@@ -74,7 +66,8 @@ public class DOAnimations : MonoBehaviour, IDanceable
     void Start()
     {
         _conductor = FindObjectOfType<Conductor>();
-        if(_conductor != null )
+
+        if (_conductor != null )
         {
             _oneBeat = 0.6f;
         }
@@ -87,7 +80,7 @@ public class DOAnimations : MonoBehaviour, IDanceable
 
         if(_visualObject == null)
         {
-            _visualObject = transform.GetChild(0).gameObject;
+            _visualObject = transform.GetChild(0).transform;
 
             if (_visualObject == null)
             {
@@ -96,24 +89,12 @@ public class DOAnimations : MonoBehaviour, IDanceable
         }
         else
         {
-            originalScale = _visualObject.transform.localScale;
+            startPos = _visualObject.localPosition;
         }
 
         if(_bodyObject == null)
         {
             Debug.LogError("Please assign a bodyObject");
-        }
-    }
-
-    void Update()
-    {
-        if(currentState == State.Ono1)
-        {
-            DOOno1();
-        }
-        else if(currentState == State.Ono2)
-        {
-            DOOno2();
         }
     }
 
@@ -123,36 +104,42 @@ public class DOAnimations : MonoBehaviour, IDanceable
     public void OnBeat()
     {
         DOTilt();
-        CheckCurrentState(currentState);
     }
 
-    void SetIdleState()
+    void SetIdle()
     {
         CurrentState = State.Idle;
+        //CheckCurrentState(State.Idle);
     }
-    void SetWalkState()
+    void SetWalk()
     {
         CurrentState = State.Walk;
+        CheckCurrentState(State.Walk);
     }
-    void SetOno1State()
+    void SetOno1()
     {
         CurrentState = State.Ono1;
+        CheckCurrentState(State.Ono1);
     }
-    void SetOno2State()
+    void SetOno2()
     {
         CurrentState = State.Ono2;
+        CheckCurrentState(State.Ono2);
     }
-    void SetWhistleOno1State()
+    void SetWhistleOno1()
     {
         CurrentState = State.WhistleOno1;
+        CheckCurrentState(State.WhistleOno1);
     }
-    void SetWhistleOno2State()
+    void SetWhistleOno2()
     {
         CurrentState = State.WhistleOno2;
+        CheckCurrentState(State.WhistleOno2);
     }
-    void SetDisapproveState()
+    void SetDisapprove()
     {
         CurrentState = State.Disapprove;
+        CheckCurrentState(State.Disapprove);
     }
 
 
@@ -163,25 +150,25 @@ public class DOAnimations : MonoBehaviour, IDanceable
         switch (CurrentState)
         {
             case State.Idle:
-                HandleIdleState();
+                DOIdle();
                 break;
             case State.Walk:
-                HandleWalkState();
+                DOWalk();
                 break;
             case State.Ono1:
-                HandleOno1State();
+                DOOno1();
                 break;
             case State.Ono2:
-                HandleOno2State();
+                DOOno2();
                 break;
             case State.WhistleOno1:
-                HandleWhistleOno1State();
+                DOWhistleOno1();
                 break;
             case State.WhistleOno2:
-                HandleWhistleOno2State();
+                DOWhistleOno2();
                 break;
             case State.Disapprove:
-                HandleDisapproveState();
+                DODisapprove();
                 break;
             default:
                 Debug.LogWarning("Unknow State: "+ CurrentState);
@@ -192,91 +179,58 @@ public class DOAnimations : MonoBehaviour, IDanceable
 
 
     // OUTPUT
-    void HandleIdleState()
+    void KillPreviousTilt()
     {
-        DOIdle();
-    }
-    void HandleWalkState()
-    {
-        DOWalk();
-    }
-    void HandleOno1State()
-    {
-        DOOno1();
-    }
-    void HandleOno2State()
-    {
-        DOOno2();
-    }
-    void HandleWhistleOno1State()
-    {
-        DOWhistleOno1();
-    }
-    void HandleWhistleOno2State()
-    {
-        DOWhistleOno2();
-    }
-    void HandleDisapproveState()
-    {
-        DODisapprove();
+        DOTween.Kill(_visualObject);
+        DOTween.Kill(_bodyObject);
     }
 
     // Animations
-    void KillPreviousTilt()
-    {
-        DOTween.Kill(TiltTweenID, true);
-    }
     void DOTilt()
     {
         KillPreviousTilt();
 
-        _visualObject.transform.DOScale((new Vector3(1.2f, 1.2f, 0)), _oneBeat / 4)
-            .SetId("tilt").SetEase(Ease.OutQuad).OnComplete(() =>
-            {
-                _visualObject.transform.DOScale((originalScale), _oneBeat / 3)
-                .SetId("tilt").SetEase(Ease.OutQuad);
-            });
+        Sequence seq = DOTween.Sequence();
+
+        seq.Append(_bodyObject.DOScale((new Vector3(1.2f, 1.2f, 1)), _oneBeat / 4).SetEase(Ease.OutQuad));
+        seq.Append(_bodyObject.DOScale((new Vector3(1f,1f,1f)), _oneBeat / 3).SetEase(Ease.OutQuad));
     }
     void DOIdle()
     {
         KillPreviousTilt();
-
-        _bodyObject.transform.DOScale(originalScale * new Vector2(0.8f, 1.2f), _oneBeat / 2)
-            .SetId("Idle").OnComplete(() =>
-            {
-                _bodyObject.transform.DOScale(originalScale, _oneBeat / 2).SetId("Idle");
-            });
-        /*
-        _bodyObject.transform.DOMoveY(0.004f, _oneBeat / 2).OnComplete(() =>
-        {
-            _bodyObject.transform.DOMoveY(-0.004f, _oneBeat / 2);
-        });
-        */
     }
     void DOWalk()
     {
         KillPreviousTilt();
 
-        _bodyObject.transform.DOMoveY(2, _oneBeat /2).SetLoops(3);
+        _visualObject.DOMoveY(2, _oneBeat /2).SetLoops(3);
     }
     void DOOno1()
     {
         KillPreviousTilt();
+        DOTween.Kill(_visualObject);
 
-        _bodyObject.transform.DOMoveY(0.5f, _oneBeat / 2).OnComplete(() =>
+        float duration = _oneBeat / 2;
+
+        Debug.Log(2);
+
+        _visualObject.DOLocalMoveY(1.2f, duration).SetLoops(2, LoopType.Yoyo).OnComplete(() =>
         {
-            _bodyObject.transform.DOMoveY(0, _oneBeat / 2);
-        });
-        _bodyObject.transform.DOMoveX(0.3f, _oneBeat / 2).OnComplete(() =>
-        {
-            _bodyObject.transform.DOMoveX(0, _oneBeat / 2);
+            SetIdle();
         });
     }
     void DOOno2()
     {
         KillPreviousTilt();
 
-        // Animation logic goes here
+        _visualObject.DOMoveY(-0.5f, _oneBeat / 2).OnComplete(() =>
+        {
+            _visualObject.DOMoveY(0, _oneBeat / 2);
+        });
+        _visualObject.DOMoveX(0.3f, _oneBeat / 2).OnComplete(() =>
+        {
+            _visualObject.DOMoveX(0, _oneBeat / 2);
+        });
     }
 
     // Whistler/NPC Exclusive Animations
