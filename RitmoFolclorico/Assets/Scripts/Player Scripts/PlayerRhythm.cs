@@ -212,6 +212,7 @@ public class PlayerRhythm : MonoBehaviour
                 DOAnimations anim = followers[i].GetComponent<DOAnimations>();
                 //anim.SetTrigger("isDancingOno1");
                 anim.CurrentState = DOAnimations.State.Ono1;
+                anim.CheckCurrentState(DOAnimations.State.Ono1);
             }
 
             if (index < commandPrint.Length)

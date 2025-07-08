@@ -280,7 +280,6 @@ public class WhistlerBrain : MonoBehaviour, IDanceable
         }
         else if(!shouldEnableCollider && !isFacingBoss)
         {
-            Debug.Log(currentCombatIndex);
             CurrentCommandSequence = basicCommands.commandSets[1 + currentCombatIndex].commandSequence;
 
             StartCoroutine(SetToWhistle());
